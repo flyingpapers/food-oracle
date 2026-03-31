@@ -3,14 +3,20 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Food Oracle</title>
+<title>What To Eat</title>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f4f0;color:#1a1a1a;min-height:100vh;padding:2rem 1rem 4rem;}
-#app{max-width:700px;margin:0 auto;display:flex;flex-direction:column;gap:1.25rem;}
-h1{font-size:22px;font-weight:500;}
-h1 small{font-size:13px;font-weight:400;color:#888;margin-left:8px;}
-.panel{background:#fff;border:1px solid #e8e6e0;border-radius:12px;padding:1.25rem;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f4f0;color:#1a1a1a;min-height:100vh;}
+#nav{background:#fff;border-bottom:1px solid #e8e6e0;position:sticky;top:0;z-index:100;}
+#nav-inner{max-width:700px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:0 1rem;}
+#nav-title{font-size:15px;font-weight:500;padding:14px 0;}
+#nav-tabs{display:flex;}
+.nav-tab{font-size:13px;padding:14px 16px;cursor:pointer;color:#888;border-bottom:2px solid transparent;background:none;border-top:none;border-left:none;border-right:none;transition:all .15s;}
+.nav-tab:hover{color:#555;}
+.nav-tab.active{color:#1a1a1a;border-bottom-color:#1a1a1a;font-weight:500;}
+.page{display:none;max-width:700px;margin:0 auto;padding:1.5rem 1rem 4rem;}
+.page.active{display:block;}
+.panel{background:#fff;border:1px solid #e8e6e0;border-radius:12px;padding:1.25rem;margin-bottom:1.25rem;}
 .sec-label{font-size:11px;font-weight:600;color:#999;text-transform:uppercase;letter-spacing:.07em;margin-bottom:12px;}
 #db-status{font-size:12px;padding:8px 12px;border-radius:8px;margin-bottom:12px;}
 #db-status.ok{background:#eaf3de;color:#3b6d11;}
@@ -34,7 +40,10 @@ h1 small{font-size:13px;font-weight:400;color:#888;margin-left:8px;}
 .dish-card-top{display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap;}
 .dish-name{font-size:14px;font-weight:500;flex:1;min-width:80px;}
 .card-tags{display:flex;align-items:center;gap:5px;flex-shrink:0;}
-.rm{background:none;border:none;cursor:pointer;color:#ccc;font-size:18px;padding:0;line-height:1;flex-shrink:0;}
+.card-actions{display:flex;align-items:center;gap:4px;flex-shrink:0;}
+.edit-btn{background:none;border:1px solid #e0dfd6;border-radius:6px;cursor:pointer;color:#888;font-size:11px;padding:2px 8px;white-space:nowrap;}
+.edit-btn:hover{background:#f0efe8;color:#555;}
+.rm{background:none;border:none;cursor:pointer;color:#ccc;font-size:18px;padding:0;line-height:1;}
 .rm:hover{color:#e24b4a;}
 .dish-hours{display:flex;flex-direction:column;gap:3px;}
 .day-row-info{display:flex;align-items:center;gap:8px;font-size:12px;}
@@ -46,7 +55,8 @@ h1 small{font-size:13px;font-weight:400;color:#888;margin-left:8px;}
 .tag.off{background:#f0efe8;color:#aaa;}
 .loc-line{font-size:12px;color:#888;margin-top:5px;}
 .empty{font-size:13px;color:#bbb;padding:4px 0 8px;}
-#add-form{border:1px solid #e8e6e0;border-radius:10px;padding:14px;background:#fafaf8;display:flex;flex-direction:column;gap:12px;}
+#form-panel{border:1px solid #e8e6e0;border-radius:10px;padding:14px;background:#fafaf8;display:flex;flex-direction:column;gap:12px;}
+#form-title{font-size:13px;font-weight:500;color:#1a1a1a;margin-bottom:2px;}
 .form-row{display:flex;gap:8px;flex-wrap:wrap;}
 .form-row label{font-size:12px;color:#777;display:flex;flex-direction:column;gap:4px;flex:1;min-width:120px;}
 input[type="text"],input[type="time"],select{padding:8px 10px;font-size:13px;border:1px solid #ddd;border-radius:8px;outline:none;background:#fff;color:#1a1a1a;width:100%;}
@@ -72,10 +82,19 @@ input[type="text"]:focus,input[type="time"]:focus,select:focus{border-color:#888
 .copy-menu-item{padding:7px 14px;font-size:13px;cursor:pointer;color:#1a1a1a;}
 .copy-menu-item:hover{background:#f5f4f0;}
 .copy-wrap{position:relative;display:inline-block;}
-.add-btn{padding:9px 20px;font-size:13px;font-weight:500;border:none;border-radius:8px;background:#1a1a1a;color:#fff;cursor:pointer;align-self:flex-end;}
-.add-btn:hover{background:#333;}
-.add-btn:disabled{opacity:.4;cursor:default;}
-#chat-window{min-height:180px;max-height:400px;overflow-y:auto;display:flex;flex-direction:column;gap:10px;margin-bottom:12px;}
+.form-actions{display:flex;justify-content:flex-end;gap:8px;}
+.save-btn{padding:9px 20px;font-size:13px;font-weight:500;border:none;border-radius:8px;background:#1a1a1a;color:#fff;cursor:pointer;}
+.save-btn:hover{background:#333;}
+.save-btn:disabled{opacity:.4;cursor:default;}
+.cancel-btn{padding:9px 16px;font-size:13px;border:1px solid #ddd;border-radius:8px;background:#fff;color:#555;cursor:pointer;display:none;}
+.cancel-btn:hover{background:#f5f4f0;}
+/* chat page */
+#page-chat .panel{display:flex;flex-direction:column;}
+#clock-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+#clock{font-size:13px;font-weight:500;color:#555;}
+#open-count{font-size:12px;color:#3b6d11;background:#eaf3de;padding:3px 10px;border-radius:20px;cursor:pointer;}
+#open-count:hover{background:#c0dd97;}
+#chat-window{min-height:220px;max-height:420px;overflow-y:auto;display:flex;flex-direction:column;gap:10px;margin-bottom:12px;}
 .msg{display:flex;gap:8px;align-items:flex-start;}
 .msg.user{flex-direction:row-reverse;}
 .bubble{max-width:82%;padding:9px 13px;border-radius:12px;font-size:14px;line-height:1.65;background:#f5f4f0;border:1px solid #e8e6e0;color:#1a1a1a;white-space:pre-wrap;}
@@ -95,41 +114,56 @@ input[type="text"]:focus,input[type="time"]:focus,select:focus{border-color:#888
 .dot{width:6px;height:6px;border-radius:50%;background:#aaa;animation:bl 1.2s infinite;}
 .dot:nth-child(2){animation-delay:.2s;}.dot:nth-child(3){animation-delay:.4s;}
 @keyframes bl{0%,80%,100%{opacity:.2}40%{opacity:1}}
-#clock{font-size:13px;font-weight:500;color:#555;}
 @media(prefers-color-scheme:dark){
-  body{background:#1a1a1a;color:#eee;}.panel{background:#242424;border-color:#333;}
-  .dish-card{background:#2a2a2a;border-color:#383838;}#add-form{background:#2a2a2a;border-color:#383838;}
+  body{background:#1a1a1a;color:#eee;}
+  #nav{background:#1f1f1f;border-color:#333;}
+  .nav-tab{color:#666;}.nav-tab:hover{color:#aaa;}.nav-tab.active{color:#eee;border-bottom-color:#eee;}
+  #nav-title{color:#eee;}
+  .panel{background:#242424;border-color:#333;}
+  .dish-card{background:#2a2a2a;border-color:#383838;}
+  #form-panel{background:#2a2a2a;border-color:#383838;}
   input[type="text"],input[type="time"],select,#chat-input{background:#2a2a2a;border-color:#444;color:#eee;}
-  .preset-btn,.copy-btn{background:#2a2a2a;border-color:#444;color:#aaa;}
-  .preset-btn:hover,.copy-btn:hover{background:#333;}
+  .preset-btn,.copy-btn,.edit-btn{background:#2a2a2a;border-color:#444;color:#aaa;}
+  .preset-btn:hover,.copy-btn:hover,.edit-btn:hover{background:#333;}
   .copy-menu{background:#2a2a2a;border-color:#444;}.copy-menu-item{color:#eee;}.copy-menu-item:hover{background:#333;}
-  .add-btn{background:#eee;color:#1a1a1a;}.add-btn:hover{background:#ccc;}
+  .save-btn{background:#eee;color:#1a1a1a;}.save-btn:hover{background:#ccc;}
+  .cancel-btn{background:#2a2a2a;border-color:#444;color:#aaa;}
   .day-toggle{background:#555;}.day-toggle:checked{background:#eee;}.day-toggle::after{background:#1a1a1a;}
   .bubble{background:#2a2a2a;border-color:#383838;color:#eee;}.msg.user .bubble{background:#0c447c;color:#b5d4f4;}
   .av{background:#2a2a2a;border-color:#383838;}.msg.user .av{background:#0c447c;color:#b5d4f4;}
   .qbtn,#send-btn{background:#242424;border-color:#444;color:#ccc;}.qbtn:hover,#send-btn:hover{background:#2a2a2a;}
   .tag.off{background:#2a2a2a;color:#555;}.tag.open{background:#173404;color:#97c459;}.tag.closed{background:#501313;color:#f09595;}
   .filter-tab{background:#242424;border-color:#444;color:#888;}.filter-tab.active{background:#eee;color:#1a1a1a;border-color:#eee;}
-  h1,#clock{color:#eee;}.hours-text{color:#bbb;}.day-label,.time-sep,.hours-table td:first-child{color:#666;}
+  #form-title{color:#eee;}.hours-text{color:#bbb;}.day-label,.time-sep,.hours-table td:first-child{color:#666;}
   #db-status.ok{background:#173404;color:#97c459;}#db-status.err{background:#501313;color:#f09595;}#db-status.loading{background:#2a2a2a;color:#888;}
+  #clock{color:#aaa;}#open-count{background:#173404;color:#97c459;}#open-count:hover{background:#27500a;}
 }
 </style>
 </head>
 <body>
-<div id="app">
-  <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
-    <h1>Food oracle <small>what should I eat?</small></h1>
-    <div id="clock"></div>
+
+<div id="nav">
+  <div id="nav-inner">
+    <div id="nav-title">What to eat</div>
+    <div id="nav-tabs">
+      <button class="nav-tab active" onclick="showPage('list')">My list</button>
+      <button class="nav-tab" onclick="showPage('chat')">What to eat?</button>
+    </div>
   </div>
+</div>
+
+<!-- PAGE 1: MY LIST -->
+<div class="page active" id="page-list">
   <div class="panel">
     <div class="sec-label">Your food list</div>
     <div id="db-status" class="loading">Connecting to database…</div>
     <div id="filter-bar"><span class="filter-tab active" data-cat="All" onclick="setFilter('All')">All</span></div>
     <div id="dish-list"><div class="empty">Loading…</div></div>
-    <div id="add-form">
+    <div id="form-panel">
+      <div id="form-title">Add a dish</div>
       <div class="form-row">
         <label style="flex:2;min-width:180px;">Dish / place name
-          <input type="text" id="f-name" placeholder="e.g. Chicken rice at Maxwell" onkeydown="if(event.key==='Enter')addDish()"/>
+          <input type="text" id="f-name" placeholder="e.g. Chicken rice at Maxwell" onkeydown="if(event.key==='Enter')submitForm()"/>
         </label>
         <label>Postal code (optional)
           <input type="text" id="f-postal" placeholder="e.g. 069184" maxlength="10"/>
@@ -162,15 +196,26 @@ input[type="text"]:focus,input[type="time"]:focus,select:focus{border-color:#888
         </div>
         <table class="hours-table"><tbody id="hours-body"></tbody></table>
       </div>
-      <div style="display:flex;justify-content:flex-end;">
-        <button class="add-btn" id="add-btn" onclick="addDish()">Add dish</button>
+      <div class="form-actions">
+        <button class="cancel-btn" id="cancel-btn" onclick="cancelEdit()">Cancel</button>
+        <button class="save-btn" id="save-btn" onclick="submitForm()">Add dish</button>
       </div>
     </div>
   </div>
+</div>
+
+<!-- PAGE 2: WHAT TO EAT -->
+<div class="page" id="page-chat">
   <div class="panel">
-    <div class="sec-label">Chat with the oracle</div>
+    <div id="clock-row">
+      <div id="clock"></div>
+      <div id="open-count" onclick="showPage('list')">— open now</div>
+    </div>
     <div id="chat-window">
-      <div class="msg bot"><div class="av">AI</div><div class="bubble">Add your dishes above and I'll help you decide what to eat based on what's open near you right now!</div></div>
+      <div class="msg bot">
+        <div class="av">AI</div>
+        <div class="bubble">Hey! Tell me where you are and what you feel like — I'll pick something from your list that's open right now!</div>
+      </div>
     </div>
     <div id="qbtns">
       <span class="qbtn" onclick="qsend(this)">What's open now?</span>
@@ -184,80 +229,71 @@ input[type="text"]:focus,input[type="time"]:focus,select:focus{border-color:#888
     </div>
   </div>
 </div>
-<script>
-// ── Supabase via plain XMLHttpRequest (avoids all CORS/postMessage issues) ──
-const SUPA_URL = 'https://fptquwehptakripyxdzr.supabase.co/rest/v1';
-const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZwdHF1d2VocHRha3JpcHl4ZHpyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5NjUwMzksImV4cCI6MjA5MDU0MTAzOX0.na64K2uSizfjGmCD-xSNS1doNzTgRQfDw0NncwROaFM';
 
-function xhr(method, path, body){
-  return new Promise(function(resolve, reject){
-    var x = new XMLHttpRequest();
-    x.open(method, SUPA_URL + path);
-    x.setRequestHeader('apikey', SUPA_KEY);
-    x.setRequestHeader('Authorization', 'Bearer ' + SUPA_KEY);
-    x.setRequestHeader('Content-Type', 'application/json');
-    if(method === 'POST') x.setRequestHeader('Prefer', 'return=representation');
-    x.onload = function(){
-      if(x.status >= 200 && x.status < 300){
-        resolve(x.responseText ? JSON.parse(x.responseText) : null);
-      } else {
-        reject(new Error('HTTP ' + x.status + ': ' + x.responseText));
-      }
-    };
-    x.onerror = function(){ reject(new Error('Network error — check internet connection')); };
-    x.send(body ? JSON.stringify(body) : null);
+<script>
+var SUPA_URL='https://fptquwehptakripyxdzr.supabase.co/rest/v1';
+var SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZwdHF1d2VocHRha3JpcHl4ZHpyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5NjUwMzksImV4cCI6MjA5MDU0MTAzOX0.na64K2uSizfjGmCD-xSNS1doNzTgRQfDw0NncwROaFM';
+
+function xhr(method,path,body){
+  return new Promise(function(resolve,reject){
+    var x=new XMLHttpRequest();
+    x.open(method,SUPA_URL+path);
+    x.setRequestHeader('apikey',SUPA_KEY);
+    x.setRequestHeader('Authorization','Bearer '+SUPA_KEY);
+    x.setRequestHeader('Content-Type','application/json');
+    if(method==='POST'||method==='PATCH')x.setRequestHeader('Prefer','return=representation');
+    x.onload=function(){if(x.status>=200&&x.status<300){resolve(x.responseText?JSON.parse(x.responseText):null);}else{reject(new Error('HTTP '+x.status+': '+x.responseText));}};
+    x.onerror=function(){reject(new Error('Network error'));};
+    x.send(body?JSON.stringify(body):null);
   });
 }
+function dbLoad(){return xhr('GET','/dishes?select=*&order=created_at.asc');}
+function dbInsert(d){return xhr('POST','/dishes',{name:d.name,category:d.category,postal:d.postal||null,hours:d.hours});}
+function dbUpdate(id,d){return xhr('PATCH','/dishes?id=eq.'+id,{name:d.name,category:d.category,postal:d.postal||null,hours:d.hours});}
+function dbDelete(id){return xhr('DELETE','/dishes?id=eq.'+id);}
 
-function dbLoad(){ return xhr('GET', '/dishes?select=*&order=created_at.asc'); }
-function dbInsert(d){ return xhr('POST', '/dishes', {name:d.name,category:d.category,postal:d.postal||null,hours:d.hours}); }
-function dbDelete(id){ return xhr('DELETE', '/dishes?id=eq.'+id); }
+var DAY_NAMES=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+var DAY_KEYS=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+var WEEKDAYS=['Mon','Tue','Wed','Thu','Fri'];
+var WEEKEND=['Sat','Sun'];
+var dishes=[],chatHistory=[],activeFilter='All',openMenu=null,editingId=null;
 
-// ── State ──────────────────────────────────────────────
-var DAY_NAMES = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-var DAY_KEYS  = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
-var WEEKDAYS  = ['Mon','Tue','Wed','Thu','Fri'];
-var WEEKEND   = ['Sat','Sun'];
-var dishes = [], chatHistory = [], activeFilter = 'All', openMenu = null;
+function showPage(name){
+  document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});
+  document.querySelectorAll('.nav-tab').forEach(function(t){t.classList.remove('active');});
+  document.getElementById('page-'+name).classList.add('active');
+  var tabs=document.querySelectorAll('.nav-tab');
+  (name==='list'?tabs[0]:tabs[1]).classList.add('active');
+}
 
-// ── Clock ──────────────────────────────────────────────
 function updateClock(){
   var n=new Date();
   document.getElementById('clock').textContent=DAY_NAMES[n.getDay()]+' '+String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');
+  var c=dishes.filter(function(d){return isOpenNow(d);}).length;
+  document.getElementById('open-count').textContent=c+' open now';
 }
-updateClock(); setInterval(updateClock,15000);
+updateClock();setInterval(updateClock,15000);
 
-// ── Status ─────────────────────────────────────────────
 function setStatus(type,msg){
-  var el=document.getElementById('db-status');
-  el.className=type; el.textContent=msg;
-  if(type==='ok') setTimeout(function(){el.className='hidden';},3000);
+  var el=document.getElementById('db-status');el.className=type;el.textContent=msg;
+  if(type==='ok')setTimeout(function(){el.className='hidden';},3000);
 }
 
-// ── Load ───────────────────────────────────────────────
 function loadDishes(){
   setStatus('loading','Connecting to database…');
   dbLoad().then(function(data){
-    dishes = data.map(function(r){ return {id:r.id,name:r.name,category:r.category,postal:r.postal||'',hours:r.hours}; });
+    dishes=data.map(function(r){return{id:r.id,name:r.name,category:r.category,postal:r.postal||'',hours:r.hours};});
     setStatus('ok','✓ Connected — '+dishes.length+' dish'+(dishes.length===1?'':'es')+' loaded');
-    rebuildFilterBar(); renderDishes();
+    rebuildFilterBar();renderDishes();updateClock();
   }).catch(function(e){
     setStatus('err','Connection failed: '+e.message);
     document.getElementById('dish-list').innerHTML='<div class="empty">Could not load. See error above.</div>';
   });
 }
 
-// ── Category ───────────────────────────────────────────
-function onCatChange(){
-  document.getElementById('custom-cat-wrap').style.display=document.getElementById('f-category').value==='custom'?'flex':'none';
-}
-function getCategory(){
-  var v=document.getElementById('f-category').value;
-  if(v==='custom'){var c=document.getElementById('f-custom-cat').value.trim();return c||'Custom';}
-  return v;
-}
+function onCatChange(){document.getElementById('custom-cat-wrap').style.display=document.getElementById('f-category').value==='custom'?'flex':'none';}
+function getCategory(){var v=document.getElementById('f-category').value;if(v==='custom'){var c=document.getElementById('f-custom-cat').value.trim();return c||'Custom';}return v;}
 
-// ── Filter ─────────────────────────────────────────────
 function setFilter(cat){
   activeFilter=cat;
   document.querySelectorAll('.filter-tab').forEach(function(t){t.classList.toggle('active',t.dataset.cat===cat);});
@@ -272,12 +308,11 @@ function rebuildFilterBar(){
   if(cats.indexOf(activeFilter)<0){activeFilter='All';setFilter('All');}
 }
 
-// ── Hours form ─────────────────────────────────────────
 function buildHoursForm(){
-  var tbody=document.getElementById('hours-body'); tbody.innerHTML='';
+  var tbody=document.getElementById('hours-body');tbody.innerHTML='';
   DAY_KEYS.forEach(function(day){
     var isWe=day==='Sat'||day==='Sun';
-    var tr=document.createElement('tr'); tr.id='row-'+day; tr.dataset.day=day;
+    var tr=document.createElement('tr');tr.id='row-'+day;tr.dataset.day=day;
     var others=DAY_KEYS.filter(function(d){return d!==day;});
     var mi='<div class="copy-menu-item" onclick="copyToAll(\''+day+'\')">All days</div>'+
       '<div class="copy-menu-item" onclick="copyToGroup(\''+day+'\',\'weekdays\')">Weekdays (Mon–Fri)</div>'+
@@ -293,31 +328,21 @@ function buildHoursForm(){
       '</div></td>';
     tbody.appendChild(tr);
     var cb=tr.querySelector('.day-toggle'),tp=tr.querySelector('.time-pair'),cw=tr.querySelector('.copy-wrap');
-    cb.addEventListener('change',function(){
-      var off=!cb.checked;
-      tp.style.opacity=off?'0.35':'1'; tp.style.pointerEvents=off?'none':'';
-      cw.style.opacity=off?'0.35':'1'; cw.style.pointerEvents=off?'none':'';
-    });
+    cb.addEventListener('change',function(){var off=!cb.checked;tp.style.opacity=off?'0.35':'1';tp.style.pointerEvents=off?'none':'';cw.style.opacity=off?'0.35':'1';cw.style.pointerEvents=off?'none':'';});
   });
 }
 buildHoursForm();
 
 document.addEventListener('click',function(e){if(openMenu&&!openMenu.contains(e.target)){openMenu.style.display='none';openMenu=null;}});
-function toggleCopyMenu(e,day){
-  e.stopPropagation();
-  var menu=document.getElementById('menu-'+day);
-  if(openMenu&&openMenu!==menu)openMenu.style.display='none';
-  var showing=menu.style.display==='block';
-  menu.style.display=showing?'none':'block'; openMenu=showing?null:menu;
-}
+function toggleCopyMenu(e,day){e.stopPropagation();var menu=document.getElementById('menu-'+day);if(openMenu&&openMenu!==menu)openMenu.style.display='none';var s=menu.style.display==='block';menu.style.display=s?'none':'block';openMenu=s?null:menu;}
 function getRowValues(day){var tr=document.getElementById('row-'+day);return{open:tr.querySelector('.t-open').value,close:tr.querySelector('.t-close').value,checked:tr.querySelector('.day-toggle').checked};}
 function setRowValues(day,open,close,checked){
   var tr=document.getElementById('row-'+day);if(!tr)return;
-  tr.querySelector('.t-open').value=open; tr.querySelector('.t-close').value=close;
+  tr.querySelector('.t-open').value=open;tr.querySelector('.t-close').value=close;
   var cb=tr.querySelector('.day-toggle');cb.checked=checked;
   var tp=tr.querySelector('.time-pair'),cw=tr.querySelector('.copy-wrap');
-  tp.style.opacity=checked?'1':'0.35'; tp.style.pointerEvents=checked?'':'none';
-  cw.style.opacity=checked?'1':'0.35'; cw.style.pointerEvents=checked?'none':'';
+  tp.style.opacity=checked?'1':'0.35';tp.style.pointerEvents=checked?'':'none';
+  cw.style.opacity=checked?'1':'0.35';cw.style.pointerEvents=checked?'none':'';
 }
 function closeAllMenus(){DAY_KEYS.forEach(function(d){var m=document.getElementById('menu-'+d);if(m)m.style.display='none';});openMenu=null;}
 function copyToAll(from){var v=getRowValues(from);DAY_KEYS.forEach(function(d){if(d!==from)setRowValues(d,v.open,v.close,v.checked);});closeAllMenus();}
@@ -338,7 +363,6 @@ function readHours(){
   return result;
 }
 
-// ── Open/closed ────────────────────────────────────────
 function isOpenNow(dish){
   var now=new Date(),day=DAY_NAMES[now.getDay()],h=dish.hours[day];
   if(!h)return false;
@@ -348,12 +372,8 @@ function isOpenNow(dish){
   if(cMin<=oMin)return cur>=oMin||cur<cMin;
   return cur>=oMin&&cur<cMin;
 }
-function catPill(cat){
-  var cls=cat.replace(/\s+/g,'-').replace(/[^a-zA-Z0-9-]/g,'');
-  return '<span class="cat-pill cat-'+cls+'">'+cat+'</span>';
-}
+function catPill(cat){var cls=cat.replace(/\s+/g,'-').replace(/[^a-zA-Z0-9-]/g,'');return '<span class="cat-pill cat-'+cls+'">'+cat+'</span>';}
 
-// ── Render ─────────────────────────────────────────────
 function renderDishes(){
   var el=document.getElementById('dish-list');
   var filtered=activeFilter==='All'?dishes:dishes.filter(function(d){return d.category===activeFilter;});
@@ -369,52 +389,75 @@ function renderDishes(){
       return '<div class="day-row-info"><span class="day-label">'+day+'</span><span class="hours-text" style="'+bold+'">'+h.open+' – '+h.close+'</span></div>';
     }).join('');
     var loc=d.postal?'<div class="loc-line">&#128205; S('+d.postal+')</div>':'';
-    return '<div class="dish-card"><div class="dish-card-top"><span class="dish-name">'+d.name+'</span>'+
+    return '<div class="dish-card'+(editingId===d.id?' dish-card--editing':'')+'" style="'+(editingId===d.id?'border-color:#888;':'')+'">'+
+      '<div class="dish-card-top"><span class="dish-name">'+d.name+'</span>'+
       '<div class="card-tags">'+catPill(d.category)+stag+'</div>'+
-      '<button class="rm" onclick="rmDish(\''+d.id+'\')">×</button></div>'+
+      '<div class="card-actions"><button class="edit-btn" onclick="startEdit(\''+d.id+'\')">Edit</button><button class="rm" onclick="rmDish(\''+d.id+'\')">×</button></div></div>'+
       '<div class="dish-hours">'+dayRows+'</div>'+loc+'</div>';
   }).join('');
 }
+setInterval(function(){renderDishes();updateClock();},60000);
 
-// ── Add ────────────────────────────────────────────────
-function addDish(){
-  var name=document.getElementById('f-name').value.trim();
-  if(!name){document.getElementById('f-name').focus();return;}
-  var postal=document.getElementById('f-postal').value.trim();
-  var category=getCategory();
-  var hours=readHours();
-  if(!Object.values(hours).some(function(h){return h!==null;})){alert('Please enable at least one day.');return;}
-  var btn=document.getElementById('add-btn');
-  btn.disabled=true; btn.textContent='Saving…';
-  dbInsert({name:name,category:category,postal:postal,hours:hours}).then(function(data){
-    var saved=Array.isArray(data)?data[0]:data;
-    dishes.push({id:saved.id,name:saved.name,category:saved.category,postal:saved.postal||'',hours:saved.hours});
-    document.getElementById('f-name').value='';
-    document.getElementById('f-postal').value='';
-    document.getElementById('f-category').value='Main Meal';
-    document.getElementById('custom-cat-wrap').style.display='none';
-    document.getElementById('f-custom-cat').value='';
-    buildHoursForm(); rebuildFilterBar(); renderDishes();
-    setStatus('ok','✓ Saved');
-  }).catch(function(e){
-    setStatus('err','Failed to save: '+e.message);
-  }).finally(function(){
-    btn.disabled=false; btn.textContent='Add dish';
-  });
+function startEdit(id){
+  var dish=dishes.find(function(d){return d.id===id;});if(!dish)return;
+  editingId=id;
+  document.getElementById('form-title').textContent='Edit dish';
+  document.getElementById('f-name').value=dish.name;
+  document.getElementById('f-postal').value=dish.postal||'';
+  var presets=['Main Meal','Dessert','Drinks','Snacks','Supper','Breakfast'];
+  if(presets.indexOf(dish.category)>=0){document.getElementById('f-category').value=dish.category;document.getElementById('custom-cat-wrap').style.display='none';}
+  else{document.getElementById('f-category').value='custom';document.getElementById('custom-cat-wrap').style.display='flex';document.getElementById('f-custom-cat').value=dish.category;}
+  buildHoursForm();
+  DAY_KEYS.forEach(function(day){var h=dish.hours[day];if(h)setRowValues(day,h.open,h.close,true);else setRowValues(day,'09:00','21:00',false);});
+  document.getElementById('save-btn').textContent='Save changes';
+  document.getElementById('cancel-btn').style.display='block';
+  document.getElementById('form-panel').scrollIntoView({behavior:'smooth',block:'start'});
+  renderDishes();
 }
-document.getElementById('f-name').addEventListener('keydown',function(e){if(e.key==='Enter')addDish();});
-
+function cancelEdit(){
+  editingId=null;
+  document.getElementById('form-title').textContent='Add a dish';
+  document.getElementById('f-name').value='';document.getElementById('f-postal').value='';
+  document.getElementById('f-category').value='Main Meal';
+  document.getElementById('custom-cat-wrap').style.display='none';document.getElementById('f-custom-cat').value='';
+  document.getElementById('save-btn').textContent='Add dish';document.getElementById('cancel-btn').style.display='none';
+  buildHoursForm();renderDishes();
+}
+function submitForm(){
+  var name=document.getElementById('f-name').value.trim();if(!name){document.getElementById('f-name').focus();return;}
+  var postal=document.getElementById('f-postal').value.trim();
+  var category=getCategory();var hours=readHours();
+  if(!Object.values(hours).some(function(h){return h!==null;})){alert('Please enable at least one day.');return;}
+  var btn=document.getElementById('save-btn');btn.disabled=true;btn.textContent=editingId?'Saving…':'Adding…';
+  var payload={name:name,category:category,postal:postal,hours:hours};
+  if(editingId){
+    var id=editingId;
+    dbUpdate(id,payload).then(function(data){
+      var u=Array.isArray(data)?data[0]:data;
+      var idx=dishes.findIndex(function(d){return d.id===id;});
+      if(idx>=0)dishes[idx]={id:u.id,name:u.name,category:u.category,postal:u.postal||'',hours:u.hours};
+      cancelEdit();rebuildFilterBar();renderDishes();updateClock();setStatus('ok','✓ Updated');
+    }).catch(function(e){setStatus('err','Failed to update: '+e.message);})
+    .finally(function(){btn.disabled=false;btn.textContent='Save changes';});
+  } else {
+    dbInsert(payload).then(function(data){
+      var s=Array.isArray(data)?data[0]:data;
+      dishes.push({id:s.id,name:s.name,category:s.category,postal:s.postal||'',hours:s.hours});
+      cancelEdit();rebuildFilterBar();renderDishes();updateClock();setStatus('ok','✓ Saved');
+    }).catch(function(e){setStatus('err','Failed to save: '+e.message);})
+    .finally(function(){btn.disabled=false;btn.textContent='Add dish';});
+  }
+}
+document.getElementById('f-name').addEventListener('keydown',function(e){if(e.key==='Enter')submitForm();});
 function rmDish(id){
   if(!confirm('Remove this dish?'))return;
   dbDelete(id).then(function(){
     dishes=dishes.filter(function(d){return d.id!==id;});
-    rebuildFilterBar(); renderDishes();
-    setStatus('ok','✓ Deleted');
+    if(editingId===id)cancelEdit();
+    rebuildFilterBar();renderDishes();updateClock();setStatus('ok','✓ Deleted');
   }).catch(function(e){setStatus('err','Failed to delete: '+e.message);});
 }
-setInterval(renderDishes,60000);
 
-// ── Chat ───────────────────────────────────────────────
 function addMsg(role,text){
   var cw=document.getElementById('chat-window');
   var d=document.createElement('div');d.className='msg '+(role==='user'?'user':'bot');
@@ -446,16 +489,15 @@ function buildContext(){
 function sendChat(){
   var inp=document.getElementById('chat-input');
   var text=inp.value.trim();if(!text)return;
-  inp.value=''; document.getElementById('send-btn').disabled=true;
-  addMsg('user',text); chatHistory.push({role:'user',content:text}); addTyping();
-  var system='You are a warm, decisive food decision helper for someone in Singapore.\n\n'+buildContext()+'\n\nYour job:\n- Help the user pick something to eat from their list.\n- Each dish has a category in [brackets]. Filter to that category if the user asks.\n- Factor in what is currently OPEN based on the exact time above.\n- If the user shares their location (area, MRT, or postal code), prefer nearby options. Singapore postal districts: 01–08=Central/CBD, 09–10=Orchard, 11–12=Novena, 14–16=Queenstown, 18–19=Jurong East, 20–22=Jurong West, 23=Bukit Batok, 25–28=Woodlands, 29–30=Sembawang, 31–33=Yishun, 34–36=Ang Mo Kio/Hougang, 37–38=Bishan, 39–41=Toa Payoh, 42–44=Geylang, 45–46=Katong, 47–48=Bedok, 49–52=Tampines/Pasir Ris, 53–58=Changi.\n- If everything relevant is closed, say so and mention what opens next.\n- Ask for location once if it would help.\n- Be SHORT: 2–4 sentences. Be confident and decisive.\n- Only suggest dishes from the user\'s list.\n- If the list is empty, ask them to add dishes first.';
+  inp.value='';document.getElementById('send-btn').disabled=true;
+  addMsg('user',text);chatHistory.push({role:'user',content:text});addTyping();
+  var system='You are a warm, decisive food decision helper for someone in Singapore.\n\n'+buildContext()+'\n\nYour job:\n- Help the user pick something to eat from their list.\n- Each dish has a category in [brackets]. Filter to that category if the user asks.\n- Factor in what is currently OPEN based on the exact time above.\n- If the user shares their location (area, MRT, or postal code), prefer nearby options. Singapore postal districts: 01–08=Central/CBD, 09–10=Orchard, 11–12=Novena, 14–16=Queenstown, 18–19=Jurong East, 20–22=Jurong West, 23=Bukit Batok, 25–28=Woodlands, 29–30=Sembawang, 31–33=Yishun, 34–36=Ang Mo Kio/Hougang, 37–38=Bishan, 39–41=Toa Payoh, 42–44=Geylang, 45–46=Katong, 47–48=Bedok, 49–52=Tampines/Pasir Ris, 53–58=Changi.\n- If everything relevant is closed, say so and mention what opens next.\n- Ask for location once if it would help.\n- Be SHORT: 2–4 sentences. Be confident and decisive.\n- Only suggest dishes from the user\'s list.\n- If list is empty, encourage them to add dishes on the My List tab.';
   fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:600,system:system,messages:chatHistory})})
   .then(function(r){return r.json();})
   .then(function(data){
     var reply=data.content&&data.content.find(function(b){return b.type==='text';});
-    removeTyping();
-    var txt=reply?reply.text:'Hmm, try again?';
-    addMsg('bot',txt); chatHistory.push({role:'assistant',content:txt});
+    removeTyping();var txt=reply?reply.text:'Hmm, try again?';
+    addMsg('bot',txt);chatHistory.push({role:'assistant',content:txt});
   }).catch(function(){removeTyping();addMsg('bot','Something went wrong. Try again!');})
   .finally(function(){document.getElementById('send-btn').disabled=false;inp.focus();});
 }
