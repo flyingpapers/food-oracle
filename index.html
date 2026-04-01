@@ -193,6 +193,16 @@ input[type="text"]:focus,input[type="time"]:focus,select:focus{border-color:#888
           <input type="text" id="f-custom-cat" placeholder="e.g. Brunch, Boba…"/>
         </label>
       </div>
+      <div class="form-row">
+        <label>Price range <span style="color:#bbb;font-weight:400;">(optional)</span>
+          <div class="price-selector">
+            <button type="button" class="price-btn" data-val="1" onclick="selectPrice(1)">$</button>
+            <button type="button" class="price-btn" data-val="2" onclick="selectPrice(2)">$$</button>
+            <button type="button" class="price-btn" data-val="3" onclick="selectPrice(3)">$$$</button>
+            <button type="button" class="price-btn" data-val="0" onclick="selectPrice(0)" style="font-size:11px;color:#ccc;">clear</button>
+          </div>
+        </label>
+      </div>
       <div>
         <div style="font-size:12px;color:#777;margin-bottom:8px;">Opening hours per day <span style="color:#bbb;font-weight:400;">— set one row then copy, or use a preset</span></div>
         <div class="preset-row" style="margin-bottom:10px;">
