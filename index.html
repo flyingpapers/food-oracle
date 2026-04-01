@@ -495,11 +495,20 @@ function sendChat(){
   fetch('https://what-to-eat-proxy.flyingpapers.workers.dev',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:600,system:system,messages:chatHistory})})
   .then(function(r){return r.json();})
   .then(function(data){
-    var reply=data.content&&data.content.find(function(b){return b.type==='text';});
-    removeTyping();var txt=reply?reply.text:'Hmm, try again?';
+    console.log('Worker response:', JSON.stringify(data));
+    var txt=null;
+    if(data.content&&Array.isArray(data.content)){
+      var block=data.content.find(function(b){return b.type==='text';});
+      if(block)txt=block.text;
+    }
+    if(!txt&&data.error){txt='API error: '+(data.error.message||JSON.stringify(data.error));}
+    if(!txt){txt='Unexpected response — check browser console (F12) for details.';}
+    removeTyping();
     addMsg('bot',txt);chatHistory.push({role:'assistant',content:txt});
-  }).catch(function(){removeTyping();addMsg('bot','Something went wrong. Try again!');})
-  .finally(function(){document.getElementById('send-btn').disabled=false;inp.focus();});
+  }).catch(function(e){
+    console.error('Fetch error:',e);
+    removeTyping();addMsg('bot','Network error: '+e.message);
+  }).finally(function(){document.getElementById('send-btn').disabled=false;inp.focus();});
 }
 function qsend(el){document.getElementById('chat-input').value=el.textContent;sendChat();}
 
