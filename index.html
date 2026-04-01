@@ -55,6 +55,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .tag.off{background:#f0efe8;color:#aaa;}
 .loc-line{font-size:12px;color:#888;margin-top:5px;}
 .empty{font-size:13px;color:#bbb;padding:4px 0 8px;}
+/* price selector */
+.price-selector{display:flex;gap:6px;}
+.price-btn{padding:5px 12px;font-size:13px;border:1px solid #ddd;border-radius:8px;background:#fff;color:#aaa;cursor:pointer;transition:all .12s;}
+.price-btn:hover{border-color:#888;color:#555;}
+.price-btn.active-1{background:#eaf3de;border-color:#97c459;color:#3b6d11;font-weight:500;}
+.price-btn.active-2{background:#faeeda;border-color:#ef9f27;color:#633806;font-weight:500;}
+.price-btn.active-3{background:#fcebeb;border-color:#e24b4a;color:#a32d2d;font-weight:500;}
+.price-tag{font-size:12px;color:#888;margin-left:2px;}
 #form-panel{border:1px solid #e8e6e0;border-radius:10px;padding:14px;background:#fafaf8;display:flex;flex-direction:column;gap:12px;}
 #form-title{font-size:13px;font-weight:500;color:#1a1a1a;margin-bottom:2px;}
 .form-row{display:flex;gap:8px;flex-wrap:wrap;}
@@ -248,15 +256,15 @@ function xhr(method,path,body){
   });
 }
 function dbLoad(){return xhr('GET','/dishes?select=*&order=created_at.asc');}
-function dbInsert(d){return xhr('POST','/dishes',{name:d.name,category:d.category,postal:d.postal||null,hours:d.hours});}
-function dbUpdate(id,d){return xhr('PATCH','/dishes?id=eq.'+id,{name:d.name,category:d.category,postal:d.postal||null,hours:d.hours});}
+function dbInsert(d){return xhr('POST','/dishes',{name:d.name,category:d.category,postal:d.postal||null,hours:d.hours,price:d.price||null});}
+function dbUpdate(id,d){return xhr('PATCH','/dishes?id=eq.'+id,{name:d.name,category:d.category,postal:d.postal||null,hours:d.hours,price:d.price||null});}
 function dbDelete(id){return xhr('DELETE','/dishes?id=eq.'+id);}
 
 var DAY_NAMES=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 var DAY_KEYS=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
 var WEEKDAYS=['Mon','Tue','Wed','Thu','Fri'];
 var WEEKEND=['Sat','Sun'];
-var dishes=[],chatHistory=[],activeFilter='All',openMenu=null,editingId=null;
+var dishes=[],chatHistory=[],activeFilter='All',openMenu=null,editingId=null,selectedPrice=0;
 
 function showPage(name){
   document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});
@@ -282,7 +290,7 @@ function setStatus(type,msg){
 function loadDishes(){
   setStatus('loading','Connecting to database…');
   dbLoad().then(function(data){
-    dishes=data.map(function(r){return{id:r.id,name:r.name,category:r.category,postal:r.postal||'',hours:r.hours};});
+    dishes=data.map(function(r){return{id:r.id,name:r.name,category:r.category,postal:r.postal||'',hours:r.hours,price:r.price||null};});
     setStatus('ok','✓ Connected — '+dishes.length+' dish'+(dishes.length===1?'':'es')+' loaded');
     rebuildFilterBar();renderDishes();updateClock();
   }).catch(function(e){
@@ -389,6 +397,7 @@ function renderDishes(){
       return '<div class="day-row-info"><span class="day-label">'+day+'</span><span class="hours-text" style="'+bold+'">'+h.open+' – '+h.close+'</span></div>';
     }).join('');
     var loc=d.postal?'<div class="loc-line">&#128205; S('+d.postal+')</div>':'';
+    var price=d.price?'<span class="price-tag">'+('$'.repeat(d.price))+'</span>':'';
     return '<div class="dish-card'+(editingId===d.id?' dish-card--editing':'')+'" style="'+(editingId===d.id?'border-color:#888;':'')+'">'+
       '<div class="dish-card-top"><span class="dish-name">'+d.name+'</span>'+
       '<div class="card-tags">'+catPill(d.category)+stag+'</div>'+
@@ -403,7 +412,7 @@ function startEdit(id){
   editingId=id;
   document.getElementById('form-title').textContent='Edit dish';
   document.getElementById('f-name').value=dish.name;
-  document.getElementById('f-postal').value=dish.postal||'';
+  document.getElementById('f-postal').value=dish.postal||'';selectPrice(dish.price||0);
   var presets=['Main Meal','Dessert','Drinks','Snacks','Supper','Breakfast'];
   if(presets.indexOf(dish.category)>=0){document.getElementById('f-category').value=dish.category;document.getElementById('custom-cat-wrap').style.display='none';}
   else{document.getElementById('f-category').value='custom';document.getElementById('custom-cat-wrap').style.display='flex';document.getElementById('f-custom-cat').value=dish.category;}
@@ -418,7 +427,7 @@ function cancelEdit(){
   editingId=null;
   document.getElementById('form-title').textContent='Add a dish';
   document.getElementById('f-name').value='';document.getElementById('f-postal').value='';
-  document.getElementById('f-category').value='Main Meal';
+  document.getElementById('f-category').value='Main Meal';selectPrice(0);
   document.getElementById('custom-cat-wrap').style.display='none';document.getElementById('f-custom-cat').value='';
   document.getElementById('save-btn').textContent='Add dish';document.getElementById('cancel-btn').style.display='none';
   buildHoursForm();renderDishes();
@@ -429,7 +438,7 @@ function submitForm(){
   var category=getCategory();var hours=readHours();
   if(!Object.values(hours).some(function(h){return h!==null;})){alert('Please enable at least one day.');return;}
   var btn=document.getElementById('save-btn');btn.disabled=true;btn.textContent=editingId?'Saving…':'Adding…';
-  var payload={name:name,category:category,postal:postal,hours:hours};
+  var price=selectedPrice;var payload={name:name,category:category,postal:postal,hours:hours,price:price||null};
   if(editingId){
     var id=editingId;
     dbUpdate(id,payload).then(function(data){
@@ -482,7 +491,7 @@ function buildContext(){
     var open=isOpenNow(d),loc=d.postal?'postal S('+d.postal+')':'no postal code';
     var todayH=d.hours[today],todayStr=todayH?'today '+todayH.open+'–'+todayH.close:'closed today';
     var sched=DAY_KEYS.map(function(day){var h=d.hours[day];return h?day+' '+h.open+'–'+h.close:day+' closed';}).join(', ');
-    return '- ['+d.category+'] '+d.name+' | '+loc+' | '+todayStr+' → '+(open?'OPEN':'CLOSED')+' now | schedule: '+sched;
+    var priceStr=d.price?('$'.repeat(d.price)):'no price set';return '- ['+d.category+'] '+d.name+' | '+loc+' | price: '+priceStr+' | '+todayStr+' → '+(open?'OPEN':'CLOSED')+' now | schedule: '+sched;
   }).join('\n');
   return 'Current time: '+timeStr+' (Singapore).\n\nUser\'s food list:\n'+lines;
 }
@@ -511,6 +520,14 @@ function sendChat(){
   }).finally(function(){document.getElementById('send-btn').disabled=false;inp.focus();});
 }
 function qsend(el){document.getElementById('chat-input').value=el.textContent;sendChat();}
+
+function selectPrice(val){
+  selectedPrice=val;
+  document.querySelectorAll('.price-btn').forEach(function(b){
+    b.className='price-btn';
+    if(val>0&&parseInt(b.dataset.val)===val) b.className='price-btn active-'+val;
+  });
+}
 
 loadDishes();
 </script>
