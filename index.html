@@ -84,6 +84,14 @@ input[type="text"]:focus,input[type="time"]:focus,select:focus{border-color:#888
 .time-pair{display:flex;align-items:center;gap:5px;}
 .time-pair input[type="time"]{width:88px;flex-shrink:0;}
 .time-sep{font-size:12px;color:#aaa;flex-shrink:0;}
+.break-row{display:flex;align-items:center;gap:6px;margin-top:3px;padding-left:44px;flex-wrap:wrap;}
+.break-label{font-size:11px;color:#aaa;white-space:nowrap;}
+.break-toggle{width:28px;height:16px;appearance:none;-webkit-appearance:none;background:#ddd;border-radius:8px;cursor:pointer;position:relative;transition:background .15s;flex-shrink:0;}
+.break-toggle:checked{background:#888;}
+.break-toggle::after{content:'';position:absolute;width:12px;height:12px;background:#fff;border-radius:50%;top:2px;left:2px;transition:left .15s;}
+.break-toggle:checked::after{left:14px;}
+.break-times{display:flex;align-items:center;gap:5px;opacity:0.35;pointer-events:none;}
+.break-times input[type="time"]{width:82px;flex-shrink:0;}
 .copy-btn{font-size:11px;color:#888;background:none;border:1px solid #e0dfd6;border-radius:6px;padding:2px 7px;cursor:pointer;white-space:nowrap;margin-left:4px;}
 .copy-btn:hover{background:#f0efe8;}
 .copy-menu{position:absolute;background:#fff;border:1px solid #e0dfd6;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,.08);z-index:50;padding:4px 0;min-width:160px;}
@@ -353,14 +361,37 @@ buildHoursForm();
 
 document.addEventListener('click',function(e){if(openMenu&&!openMenu.contains(e.target)){openMenu.style.display='none';openMenu=null;}});
 function toggleCopyMenu(e,day){e.stopPropagation();var menu=document.getElementById('menu-'+day);if(openMenu&&openMenu!==menu)openMenu.style.display='none';var s=menu.style.display==='block';menu.style.display=s?'none':'block';openMenu=s?null:menu;}
-function getRowValues(day){var tr=document.getElementById('row-'+day);return{open:tr.querySelector('.t-open').value,close:tr.querySelector('.t-close').value,checked:tr.querySelector('.day-toggle').checked};}
-function setRowValues(day,open,close,checked){
+function getRowValues(day){
+  var tr=document.getElementById('row-'+day);
+  var bc=tr.querySelector('.break-toggle');
+  return{
+    open:tr.querySelector('.t-open').value,
+    close:tr.querySelector('.t-close').value,
+    checked:tr.querySelector('.day-toggle').checked,
+    breakOn:bc.checked,
+    breakStart:tr.querySelector('.t-break-start').value,
+    breakEnd:tr.querySelector('.t-break-end').value
+  };
+}
+function setRowValues(day,open,close,checked,breakOn,breakStart,breakEnd){
   var tr=document.getElementById('row-'+day);if(!tr)return;
   tr.querySelector('.t-open').value=open;tr.querySelector('.t-close').value=close;
   var cb=tr.querySelector('.day-toggle');cb.checked=checked;
   var tp=tr.querySelector('.time-pair'),cw=tr.querySelector('.copy-wrap');
   tp.style.opacity=checked?'1':'0.35';tp.style.pointerEvents=checked?'':'none';
   cw.style.opacity=checked?'1':'0.35';cw.style.pointerEvents=checked?'none':'';
+  var bc=tr.querySelector('.break-toggle');
+  var bt=tr.querySelector('.break-times');
+  var br=tr.querySelector('.break-row');
+  if(breakOn!==undefined){
+    bc.checked=!!breakOn;
+    if(breakStart)tr.querySelector('.t-break-start').value=breakStart;
+    if(breakEnd)tr.querySelector('.t-break-end').value=breakEnd;
+    bt.style.opacity=bc.checked?'1':'0.35';
+    bt.style.pointerEvents=bc.checked?'':'none';
+  }
+  br.style.opacity=checked?'1':'0.35';
+  br.style.pointerEvents=checked?'none':'';
 }
 function closeAllMenus(){DAY_KEYS.forEach(function(d){var m=document.getElementById('menu-'+d);if(m)m.style.display='none';});openMenu=null;}
 function copyToAll(from){var v=getRowValues(from);DAY_KEYS.forEach(function(d){if(d!==from)setRowValues(d,v.open,v.close,v.checked);});closeAllMenus();}
@@ -376,7 +407,14 @@ function readHours(){
   var result={};
   document.querySelectorAll('#hours-body tr').forEach(function(tr){
     var cb=tr.querySelector('.day-toggle');
-    result[tr.dataset.day]=cb.checked?{open:tr.querySelector('.t-open').value,close:tr.querySelector('.t-close').value}:null;
+    if(!cb.checked){result[tr.dataset.day]=null;return;}
+    var bc=tr.querySelector('.break-toggle');
+    var h={open:tr.querySelector('.t-open').value,close:tr.querySelector('.t-close').value};
+    if(bc.checked){
+      h.breakStart=tr.querySelector('.t-break-start').value;
+      h.breakEnd=tr.querySelector('.t-break-end').value;
+    }
+    result[tr.dataset.day]=h;
   });
   return result;
 }
@@ -387,8 +425,15 @@ function isOpenNow(dish){
   var cur=now.getHours()*60+now.getMinutes();
   var op=h.open.split(':').map(Number),cl=h.close.split(':').map(Number);
   var oMin=op[0]*60+op[1],cMin=cl[0]*60+cl[1];
-  if(cMin<=oMin)return cur>=oMin||cur<cMin;
-  return cur>=oMin&&cur<cMin;
+  var withinHours=(cMin<=oMin)?(cur>=oMin||cur<cMin):(cur>=oMin&&cur<cMin);
+  if(!withinHours)return false;
+  // check break time
+  if(h.breakStart&&h.breakEnd){
+    var bs=h.breakStart.split(':').map(Number),be=h.breakEnd.split(':').map(Number);
+    var bsMin=bs[0]*60+bs[1],beMin=be[0]*60+be[1];
+    if(cur>=bsMin&&cur<beMin)return false;
+  }
+  return true;
 }
 function catPill(cat){var cls=cat.replace(/\s+/g,'-').replace(/[^a-zA-Z0-9-]/g,'');return '<span class="cat-pill cat-'+cls+'">'+cat+'</span>';}
 
@@ -404,7 +449,8 @@ function renderDishes(){
       var h=d.hours[day];
       if(!h)return '<div class="day-row-info"><span class="day-label">'+day+'</span><span class="tag off">Closed</span></div>';
       var bold=day===today?'font-weight:500;color:#1a1a1a;':'';
-      return '<div class="day-row-info"><span class="day-label">'+day+'</span><span class="hours-text" style="'+bold+'">'+h.open+' – '+h.close+'</span></div>';
+      var breakStr=h.breakStart?'<span style="color:#ccc;margin:0 2px;">·</span><span style="color:#bbb;font-size:11px;">break '+h.breakStart+'–'+h.breakEnd+'</span>':'';
+      return '<div class="day-row-info"><span class="day-label">'+day+'</span><span class="hours-text" style="'+bold+'">'+h.open+' – '+h.close+'</span>'+breakStr+'</div>';
     }).join('');
     var loc=d.postal?'<div class="loc-line">&#128205; S('+d.postal+')</div>':'';
     var price=d.price?'<span class="price-tag">'+('$'.repeat(d.price))+'</span>':'';
@@ -427,7 +473,7 @@ function startEdit(id){
   if(presets.indexOf(dish.category)>=0){document.getElementById('f-category').value=dish.category;document.getElementById('custom-cat-wrap').style.display='none';}
   else{document.getElementById('f-category').value='custom';document.getElementById('custom-cat-wrap').style.display='flex';document.getElementById('f-custom-cat').value=dish.category;}
   buildHoursForm();
-  DAY_KEYS.forEach(function(day){var h=dish.hours[day];if(h)setRowValues(day,h.open,h.close,true);else setRowValues(day,'09:00','21:00',false);});
+  DAY_KEYS.forEach(function(day){var h=dish.hours[day];if(h)setRowValues(day,h.open,h.close,true,!!(h.breakStart),h.breakStart||'14:00',h.breakEnd||'17:00');else setRowValues(day,'09:00','21:00',false,false,'14:00','17:00');});
   document.getElementById('save-btn').textContent='Save changes';
   document.getElementById('cancel-btn').style.display='block';
   document.getElementById('form-panel').scrollIntoView({behavior:'smooth',block:'start'});
@@ -500,7 +546,7 @@ function buildContext(){
   var lines=dishes.map(function(d){
     var open=isOpenNow(d),loc=d.postal?'postal S('+d.postal+')':'no postal code';
     var todayH=d.hours[today],todayStr=todayH?'today '+todayH.open+'–'+todayH.close:'closed today';
-    var sched=DAY_KEYS.map(function(day){var h=d.hours[day];return h?day+' '+h.open+'–'+h.close:day+' closed';}).join(', ');
+    var sched=DAY_KEYS.map(function(day){var h=d.hours[day];if(!h)return day+' closed';var b=h.breakStart?' (break '+h.breakStart+'–'+h.breakEnd+')':'';return day+' '+h.open+'–'+h.close+b;}).join(', ');
     var priceStr=d.price?('$'.repeat(d.price)):'no price set';return '- ['+d.category+'] '+d.name+' | '+loc+' | price: '+priceStr+' | '+todayStr+' → '+(open?'OPEN':'CLOSED')+' now | schedule: '+sched;
   }).join('\n');
   return 'Current time: '+timeStr+' (Singapore).\n\nUser\'s food list:\n'+lines;
