@@ -6,18 +6,18 @@
 <title>What To Eat</title>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f4f0;color:#1a1a1a;min-height:100vh;}
-#nav{background:#fff;border-bottom:1px solid #e8e6e0;position:sticky;top:0;z-index:100;}
-#nav-inner{max-width:700px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:0 1rem;}
-#nav-title{font-size:15px;font-weight:500;padding:14px 0;}
-#nav-tabs{display:flex;}
-.nav-tab{font-size:13px;padding:14px 16px;cursor:pointer;color:#888;border-bottom:2px solid transparent;background:none;border-top:none;border-left:none;border-right:none;transition:all .15s;}
-.nav-tab:hover{color:#555;}
-.nav-tab.active{color:#1a1a1a;border-bottom-color:#1a1a1a;font-weight:500;}
-.page{display:none;max-width:700px;margin:0 auto;padding:1.5rem 1rem 4rem;}
-.page.active{display:block;}
-.panel{background:#fff;border:1px solid #e8e6e0;border-radius:12px;padding:1.25rem;margin-bottom:1.25rem;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f4f0;color:#1a1a1a;min-height:100vh;padding:2rem 1rem 4rem;}
+#app{max-width:700px;margin:0 auto;display:flex;flex-direction:column;gap:1.25rem;}
+h1{font-size:22px;font-weight:500;}
+h1 small{font-size:13px;font-weight:400;color:#888;margin-left:8px;}
+.panel{background:#fff;border:1px solid #e8e6e0;border-radius:12px;padding:1.25rem;}
 .sec-label{font-size:11px;font-weight:600;color:#999;text-transform:uppercase;letter-spacing:.07em;margin-bottom:12px;}
+nav{display:flex;background:#fff;border:1px solid #e8e6e0;border-radius:12px;overflow:hidden;}
+.nav-tab{flex:1;padding:13px;font-size:14px;font-weight:500;text-align:center;cursor:pointer;color:#888;border:none;background:none;border-bottom:2px solid transparent;transition:all .15s;}
+.nav-tab:hover{background:#f5f4f0;color:#555;}
+.nav-tab.active{color:#1a1a1a;border-bottom:2px solid #1a1a1a;}
+.page{display:none;flex-direction:column;gap:1.25rem;}
+.page.active{display:flex;}
 #db-status{font-size:12px;padding:8px 12px;border-radius:8px;margin-bottom:12px;}
 #db-status.ok{background:#eaf3de;color:#3b6d11;}
 #db-status.err{background:#fcebeb;color:#a32d2d;}
@@ -35,34 +35,28 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .filter-tab{font-size:12px;padding:4px 12px;border:1px solid #e0dfd6;border-radius:20px;background:#fff;color:#888;cursor:pointer;}
 .filter-tab:hover{background:#f5f4f0;}
 .filter-tab.active{background:#1a1a1a;color:#fff;border-color:#1a1a1a;}
-#dish-list{display:flex;flex-direction:column;gap:8px;margin-bottom:14px;}
+#dish-list{display:flex;flex-direction:column;gap:8px;margin-top:12px;}
 .dish-card{background:#f8f7f4;border:1px solid #e8e6e0;border-radius:10px;padding:10px 12px;}
 .dish-card-top{display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap;}
 .dish-name{font-size:14px;font-weight:500;flex:1;min-width:80px;}
 .card-tags{display:flex;align-items:center;gap:5px;flex-shrink:0;}
 .card-actions{display:flex;align-items:center;gap:4px;flex-shrink:0;}
-.edit-btn{background:none;border:1px solid #e0dfd6;border-radius:6px;cursor:pointer;color:#888;font-size:11px;padding:2px 8px;white-space:nowrap;}
+.edit-btn{background:none;border:1px solid #e0dfd6;border-radius:6px;cursor:pointer;color:#888;font-size:11px;padding:2px 8px;}
 .edit-btn:hover{background:#f0efe8;color:#555;}
 .rm{background:none;border:none;cursor:pointer;color:#ccc;font-size:18px;padding:0;line-height:1;}
 .rm:hover{color:#e24b4a;}
 .dish-hours{display:flex;flex-direction:column;gap:3px;}
-.day-row-info{display:flex;align-items:center;gap:8px;font-size:12px;}
+.day-row-info{display:flex;align-items:center;gap:8px;font-size:12px;flex-wrap:wrap;}
 .day-label{width:28px;color:#999;flex-shrink:0;}
 .hours-text{color:#555;}
+.break-text{font-size:11px;color:#bbb;}
 .tag{display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:11px;}
 .tag.open{background:#eaf3de;color:#3b6d11;}
 .tag.closed{background:#fcebeb;color:#a32d2d;}
 .tag.off{background:#f0efe8;color:#aaa;}
-.loc-line{font-size:12px;color:#888;margin-top:5px;}
+.loc-line{font-size:12px;color:#888;margin-top:5px;display:flex;align-items:center;gap:8px;}
+.price-tag{font-size:12px;color:#888;}
 .empty{font-size:13px;color:#bbb;padding:4px 0 8px;}
-/* price selector */
-.price-selector{display:flex;gap:6px;}
-.price-btn{padding:5px 12px;font-size:13px;border:1px solid #ddd;border-radius:8px;background:#fff;color:#aaa;cursor:pointer;transition:all .12s;}
-.price-btn:hover{border-color:#888;color:#555;}
-.price-btn.active-1{background:#eaf3de;border-color:#97c459;color:#3b6d11;font-weight:500;}
-.price-btn.active-2{background:#faeeda;border-color:#ef9f27;color:#633806;font-weight:500;}
-.price-btn.active-3{background:#fcebeb;border-color:#e24b4a;color:#a32d2d;font-weight:500;}
-.price-tag{font-size:12px;color:#888;margin-left:2px;}
 #form-panel{border:1px solid #e8e6e0;border-radius:10px;padding:14px;background:#fafaf8;display:flex;flex-direction:column;gap:12px;}
 #form-title{font-size:13px;font-weight:500;color:#1a1a1a;margin-bottom:2px;}
 .form-row{display:flex;gap:8px;flex-wrap:wrap;}
@@ -70,13 +64,21 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 input[type="text"],input[type="time"],select{padding:8px 10px;font-size:13px;border:1px solid #ddd;border-radius:8px;outline:none;background:#fff;color:#1a1a1a;width:100%;}
 input[type="text"]:focus,input[type="time"]:focus,select:focus{border-color:#888;}
 #custom-cat-wrap{display:none;}
+.price-selector{display:flex;gap:6px;}
+.price-btn{padding:5px 12px;font-size:13px;border:1px solid #ddd;border-radius:8px;background:#fff;color:#aaa;cursor:pointer;transition:all .12s;}
+.price-btn:hover{border-color:#888;color:#555;}
+.price-btn.active-1{background:#eaf3de;border-color:#97c459;color:#3b6d11;font-weight:500;}
+.price-btn.active-2{background:#faeeda;border-color:#ef9f27;color:#633806;font-weight:500;}
+.price-btn.active-3{background:#fcebeb;border-color:#e24b4a;color:#a32d2d;font-weight:500;}
+.price-btn.active-clear{background:#f0efe8;border-color:#ccc;color:#999;}
 .preset-row{display:flex;gap:6px;flex-wrap:wrap;align-items:center;}
 .preset-label{font-size:12px;color:#999;}
 .preset-btn{font-size:12px;padding:4px 10px;border:1px solid #ddd;border-radius:20px;background:#fff;color:#555;cursor:pointer;white-space:nowrap;}
 .preset-btn:hover{background:#f0efe8;}
 .hours-table{width:100%;border-collapse:collapse;}
-.hours-table td{padding:3px 4px;vertical-align:middle;}
-.hours-table td:first-child{width:36px;font-size:13px;color:#666;font-weight:500;padding-left:0;}
+.hours-table td{padding:3px 4px;vertical-align:top;}
+.hours-table td:first-child{width:36px;font-size:13px;color:#666;font-weight:500;padding-left:0;padding-top:9px;}
+.hours-table td:nth-child(2){width:44px;padding-top:9px;}
 .day-toggle{width:36px;height:20px;appearance:none;-webkit-appearance:none;background:#ddd;border-radius:10px;cursor:pointer;position:relative;transition:background .15s;}
 .day-toggle:checked{background:#1a1a1a;}
 .day-toggle::after{content:'';position:absolute;width:16px;height:16px;background:#fff;border-radius:50%;top:2px;left:2px;transition:left .15s;}
@@ -84,33 +86,27 @@ input[type="text"]:focus,input[type="time"]:focus,select:focus{border-color:#888
 .time-pair{display:flex;align-items:center;gap:5px;}
 .time-pair input[type="time"]{width:88px;flex-shrink:0;}
 .time-sep{font-size:12px;color:#aaa;flex-shrink:0;}
-.break-row{display:flex;align-items:center;gap:6px;margin-top:3px;padding-left:44px;flex-wrap:wrap;}
-.break-label{font-size:11px;color:#aaa;white-space:nowrap;}
-.break-toggle{width:28px;height:16px;appearance:none;-webkit-appearance:none;background:#ddd;border-radius:8px;cursor:pointer;position:relative;transition:background .15s;flex-shrink:0;}
-.break-toggle:checked{background:#888;}
-.break-toggle::after{content:'';position:absolute;width:12px;height:12px;background:#fff;border-radius:50%;top:2px;left:2px;transition:left .15s;}
-.break-toggle:checked::after{left:14px;}
-.break-times{display:flex;align-items:center;gap:5px;opacity:0.35;pointer-events:none;}
-.break-times input[type="time"]{width:82px;flex-shrink:0;}
 .copy-btn{font-size:11px;color:#888;background:none;border:1px solid #e0dfd6;border-radius:6px;padding:2px 7px;cursor:pointer;white-space:nowrap;margin-left:4px;}
 .copy-btn:hover{background:#f0efe8;}
 .copy-menu{position:absolute;background:#fff;border:1px solid #e0dfd6;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,.08);z-index:50;padding:4px 0;min-width:160px;}
 .copy-menu-item{padding:7px 14px;font-size:13px;cursor:pointer;color:#1a1a1a;}
 .copy-menu-item:hover{background:#f5f4f0;}
 .copy-wrap{position:relative;display:inline-block;}
+.break-row{display:flex;align-items:center;gap:6px;margin-top:5px;flex-wrap:wrap;}
+.break-label{font-size:11px;color:#aaa;white-space:nowrap;}
+.break-toggle{width:28px;height:16px;appearance:none;-webkit-appearance:none;background:#ddd;border-radius:8px;cursor:pointer;position:relative;transition:background .15s;flex-shrink:0;}
+.break-toggle:checked{background:#888;}
+.break-toggle::after{content:'';position:absolute;width:12px;height:12px;background:#fff;border-radius:50%;top:2px;left:2px;transition:left .15s;}
+.break-toggle:checked::after{left:14px;}
+.break-times{display:flex;align-items:center;gap:5px;transition:opacity .15s;}
+.break-times input[type="time"]{width:82px;flex-shrink:0;}
 .form-actions{display:flex;justify-content:flex-end;gap:8px;}
 .save-btn{padding:9px 20px;font-size:13px;font-weight:500;border:none;border-radius:8px;background:#1a1a1a;color:#fff;cursor:pointer;}
 .save-btn:hover{background:#333;}
 .save-btn:disabled{opacity:.4;cursor:default;}
 .cancel-btn{padding:9px 16px;font-size:13px;border:1px solid #ddd;border-radius:8px;background:#fff;color:#555;cursor:pointer;display:none;}
 .cancel-btn:hover{background:#f5f4f0;}
-/* chat page */
-#page-chat .panel{display:flex;flex-direction:column;}
-#clock-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
-#clock{font-size:13px;font-weight:500;color:#555;}
-#open-count{font-size:12px;color:#3b6d11;background:#eaf3de;padding:3px 10px;border-radius:20px;cursor:pointer;}
-#open-count:hover{background:#c0dd97;}
-#chat-window{min-height:220px;max-height:420px;overflow-y:auto;display:flex;flex-direction:column;gap:10px;margin-bottom:12px;}
+#chat-window{min-height:240px;max-height:480px;overflow-y:auto;display:flex;flex-direction:column;gap:10px;margin-bottom:12px;}
 .msg{display:flex;gap:8px;align-items:flex-start;}
 .msg.user{flex-direction:row-reverse;}
 .bubble{max-width:82%;padding:9px 13px;border-radius:12px;font-size:14px;line-height:1.65;background:#f5f4f0;border:1px solid #e8e6e0;color:#1a1a1a;white-space:pre-wrap;}
@@ -130,12 +126,13 @@ input[type="text"]:focus,input[type="time"]:focus,select:focus{border-color:#888
 .dot{width:6px;height:6px;border-radius:50%;background:#aaa;animation:bl 1.2s infinite;}
 .dot:nth-child(2){animation-delay:.2s;}.dot:nth-child(3){animation-delay:.4s;}
 @keyframes bl{0%,80%,100%{opacity:.2}40%{opacity:1}}
+#clock{font-size:13px;font-weight:500;color:#555;}
 @media(prefers-color-scheme:dark){
   body{background:#1a1a1a;color:#eee;}
-  #nav{background:#1f1f1f;border-color:#333;}
-  .nav-tab{color:#666;}.nav-tab:hover{color:#aaa;}.nav-tab.active{color:#eee;border-bottom-color:#eee;}
-  #nav-title{color:#eee;}
   .panel{background:#242424;border-color:#333;}
+  nav{background:#242424;border-color:#333;}
+  .nav-tab:hover{background:#2a2a2a;}
+  .nav-tab.active{color:#eee;border-bottom-color:#eee;}
   .dish-card{background:#2a2a2a;border-color:#383838;}
   #form-panel{background:#2a2a2a;border-color:#383838;}
   input[type="text"],input[type="time"],select,#chat-input{background:#2a2a2a;border-color:#444;color:#eee;}
@@ -145,130 +142,134 @@ input[type="text"]:focus,input[type="time"]:focus,select:focus{border-color:#888
   .save-btn{background:#eee;color:#1a1a1a;}.save-btn:hover{background:#ccc;}
   .cancel-btn{background:#2a2a2a;border-color:#444;color:#aaa;}
   .day-toggle{background:#555;}.day-toggle:checked{background:#eee;}.day-toggle::after{background:#1a1a1a;}
+  .break-toggle{background:#555;}.break-toggle:checked{background:#aaa;}.break-toggle::after{background:#1a1a1a;}
   .bubble{background:#2a2a2a;border-color:#383838;color:#eee;}.msg.user .bubble{background:#0c447c;color:#b5d4f4;}
   .av{background:#2a2a2a;border-color:#383838;}.msg.user .av{background:#0c447c;color:#b5d4f4;}
   .qbtn,#send-btn{background:#242424;border-color:#444;color:#ccc;}.qbtn:hover,#send-btn:hover{background:#2a2a2a;}
   .tag.off{background:#2a2a2a;color:#555;}.tag.open{background:#173404;color:#97c459;}.tag.closed{background:#501313;color:#f09595;}
   .filter-tab{background:#242424;border-color:#444;color:#888;}.filter-tab.active{background:#eee;color:#1a1a1a;border-color:#eee;}
-  #form-title{color:#eee;}.hours-text{color:#bbb;}.day-label,.time-sep,.hours-table td:first-child{color:#666;}
+  h1,#clock,#form-title{color:#eee;}.hours-text{color:#bbb;}.day-label,.time-sep,.hours-table td:first-child{color:#666;}
+  .break-label{color:#666;}.break-text{color:#666;}
   #db-status.ok{background:#173404;color:#97c459;}#db-status.err{background:#501313;color:#f09595;}#db-status.loading{background:#2a2a2a;color:#888;}
-  #clock{color:#aaa;}#open-count{background:#173404;color:#97c459;}#open-count:hover{background:#27500a;}
+  .cat-Main-Meal{background:#0c447c;color:#b5d4f4;}.cat-Dessert{background:#4b1528;color:#f4c0d1;}
+  .cat-Drinks{background:#173404;color:#97c459;}.cat-Snacks{background:#412402;color:#fac775;}
+  .cat-Supper{background:#26215c;color:#cecbf6;}.cat-Breakfast{background:#4a1b0c;color:#f5c4b3;}
+  .price-btn{background:#2a2a2a;border-color:#444;color:#666;}
 }
 </style>
 </head>
 <body>
-
-<div id="nav">
-  <div id="nav-inner">
-    <div id="nav-title">What to eat</div>
-    <div id="nav-tabs">
-      <button class="nav-tab active" onclick="showPage('list')">My list</button>
-      <button class="nav-tab" onclick="showPage('chat')">What to eat?</button>
-    </div>
+<div id="app">
+  <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+    <h1>What to eat <small>let me decide for you</small></h1>
+    <div id="clock"></div>
   </div>
-</div>
+  <nav>
+    <button class="nav-tab" onclick="showPage('list')">My food list</button>
+    <button class="nav-tab active" onclick="showPage('chat')">Ask the oracle</button>
+  </nav>
 
-<!-- PAGE 1: MY LIST -->
-<div class="page active" id="page-list">
-  <div class="panel">
-    <div class="sec-label">Your food list</div>
-    <div id="db-status" class="loading">Connecting to database…</div>
-    <div id="filter-bar"><span class="filter-tab active" data-cat="All" onclick="setFilter('All')">All</span></div>
-    <div id="dish-list"><div class="empty">Loading…</div></div>
-    <div id="form-panel">
-      <div id="form-title">Add a dish</div>
-      <div class="form-row">
-        <label style="flex:2;min-width:180px;">Dish / place name
-          <input type="text" id="f-name" placeholder="e.g. Chicken rice at Maxwell" onkeydown="if(event.key==='Enter')submitForm()"/>
-        </label>
-        <label>Postal code (optional)
-          <input type="text" id="f-postal" placeholder="e.g. 069184" maxlength="10"/>
-        </label>
-      </div>
-      <div class="form-row">
-        <label>Category
-          <select id="f-category" onchange="onCatChange()">
-            <option value="Main Meal">Main Meal</option>
-            <option value="Dessert">Dessert</option>
-            <option value="Drinks">Drinks</option>
-            <option value="Snacks">Snacks</option>
-            <option value="Supper">Supper</option>
-            <option value="Breakfast">Breakfast</option>
-            <option value="custom">+ Custom…</option>
-          </select>
-        </label>
-        <label id="custom-cat-wrap">Custom category
-          <input type="text" id="f-custom-cat" placeholder="e.g. Brunch, Boba…"/>
-        </label>
-      </div>
-      <div class="form-row">
-        <label>Price range <span style="color:#bbb;font-weight:400;">(optional)</span>
-          <div class="price-selector">
-            <button type="button" class="price-btn" data-val="1" onclick="selectPrice(1)">$</button>
-            <button type="button" class="price-btn" data-val="2" onclick="selectPrice(2)">$$</button>
-            <button type="button" class="price-btn" data-val="3" onclick="selectPrice(3)">$$$</button>
-            <button type="button" class="price-btn" data-val="0" onclick="selectPrice(0)" style="font-size:11px;color:#ccc;">clear</button>
-          </div>
-        </label>
-      </div>
-      <div>
-        <div style="font-size:12px;color:#777;margin-bottom:8px;">Opening hours per day <span style="color:#bbb;font-weight:400;">— set one row then copy, or use a preset</span></div>
-        <div class="preset-row" style="margin-bottom:10px;">
-          <span class="preset-label">Quick fill:</span>
-          <button class="preset-btn" onclick="applyPreset('same')">Same every day</button>
-          <button class="preset-btn" onclick="applyPreset('weekday-weekend')">Weekday / weekend</button>
-          <button class="preset-btn" onclick="applyPreset('mon-sat')">Mon–Sat only</button>
-          <button class="preset-btn" onclick="applyPreset('mon-fri')">Mon–Fri only</button>
+  <!-- PAGE: FOOD LIST -->
+  <div id="page-list" class="page">
+    <div class="panel">
+      <div class="sec-label">Add a dish</div>
+      <div id="db-status" class="loading">Connecting to database…</div>
+      <div id="form-panel">
+        <div id="form-title" style="display:none;"></div>
+        <div class="form-row">
+          <label style="flex:2;min-width:180px;">Dish / place name
+            <input type="text" id="f-name" placeholder="e.g. Chicken rice at Maxwell"/>
+          </label>
+          <label>Postal code (optional)
+            <input type="text" id="f-postal" placeholder="e.g. 069184" maxlength="10"/>
+          </label>
         </div>
-        <table class="hours-table"><tbody id="hours-body"></tbody></table>
+        <div class="form-row">
+          <label>Category
+            <select id="f-category" onchange="onCatChange()">
+              <option value="Main Meal">Main Meal</option>
+              <option value="Dessert">Dessert</option>
+              <option value="Drinks">Drinks</option>
+              <option value="Snacks">Snacks</option>
+              <option value="Supper">Supper</option>
+              <option value="Breakfast">Breakfast</option>
+              <option value="custom">+ Custom…</option>
+            </select>
+          </label>
+          <label id="custom-cat-wrap">Custom category
+            <input type="text" id="f-custom-cat" placeholder="e.g. Brunch, Boba…"/>
+          </label>
+        </div>
+        <div class="form-row">
+          <label>Price range <span style="color:#bbb;font-weight:400;">(optional)</span>
+            <div class="price-selector">
+              <button type="button" class="price-btn" data-val="1" onclick="selectPrice(1)">$</button>
+              <button type="button" class="price-btn" data-val="2" onclick="selectPrice(2)">$$</button>
+              <button type="button" class="price-btn" data-val="3" onclick="selectPrice(3)">$$$</button>
+              <button type="button" class="price-btn" data-val="0" onclick="selectPrice(0)" style="font-size:11px;">clear</button>
+            </div>
+          </label>
+        </div>
+        <div>
+          <div style="font-size:12px;color:#777;margin-bottom:8px;">Opening hours per day <span style="color:#bbb;font-weight:400;">— use presets or copy individual rows</span></div>
+          <div class="preset-row" style="margin-bottom:10px;">
+            <span class="preset-label">Quick fill:</span>
+            <button class="preset-btn" onclick="applyPreset('same')">Same every day</button>
+            <button class="preset-btn" onclick="applyPreset('weekday-weekend')">Weekday / weekend</button>
+            <button class="preset-btn" onclick="applyPreset('mon-sat')">Mon–Sat only</button>
+            <button class="preset-btn" onclick="applyPreset('mon-fri')">Mon–Fri only</button>
+          </div>
+          <table class="hours-table"><tbody id="hours-body"></tbody></table>
+        </div>
+        <div class="form-actions">
+          <button class="cancel-btn" id="cancel-btn" onclick="cancelEdit()">Cancel</button>
+          <button class="save-btn" id="save-btn" onclick="submitForm()">Add dish</button>
+        </div>
       </div>
-      <div class="form-actions">
-        <button class="cancel-btn" id="cancel-btn" onclick="cancelEdit()">Cancel</button>
-        <button class="save-btn" id="save-btn" onclick="submitForm()">Add dish</button>
-      </div>
+
+      <div id="filter-bar" style="margin-top:1rem;"><span class="filter-tab active" data-cat="All" onclick="setFilter('All')">All</span></div>
+      <div id="dish-list"><div class="empty">Loading…</div></div>
     </div>
   </div>
-</div>
 
-<!-- PAGE 2: WHAT TO EAT -->
-<div class="page" id="page-chat">
-  <div class="panel">
-    <div id="clock-row">
-      <div id="clock"></div>
-      <div id="open-count" onclick="showPage('list')">— open now</div>
-    </div>
-    <div id="chat-window">
-      <div class="msg bot">
-        <div class="av">AI</div>
-        <div class="bubble">Hey! Tell me where you are and what you feel like — I'll pick something from your list that's open right now!</div>
+  <!-- PAGE: CHAT -->
+  <div id="page-chat" class="page active">
+    <div class="panel">
+      <div class="sec-label">Ask the oracle</div>
+      <div id="chat-window">
+        <div class="msg bot"><div class="av">AI</div><div class="bubble">Hey! Tell me where you are and what you feel like — I'll find what's open near you right now from your list!</div></div>
       </div>
-    </div>
-    <div id="qbtns">
-      <span class="qbtn" onclick="qsend(this)">What's open now?</span>
-      <span class="qbtn" onclick="qsend(this)">I want dessert</span>
-      <span class="qbtn" onclick="qsend(this)">I'm near Orchard Road</span>
-      <span class="qbtn" onclick="qsend(this)">Surprise me</span>
-    </div>
-    <div id="chat-row">
-      <input id="chat-input" type="text" placeholder="Tell me your mood, category, location…" onkeydown="if(event.key==='Enter')sendChat()"/>
-      <button id="send-btn" onclick="sendChat()">Send</button>
+      <div id="qbtns">
+        <span class="qbtn" onclick="qsend(this)">What's open now?</span>
+        <span class="qbtn" onclick="qsend(this)">I want dessert</span>
+        <span class="qbtn" onclick="qsend(this)">I'm near Orchard Road</span>
+        <span class="qbtn" onclick="qsend(this)">Surprise me</span>
+      </div>
+      <div id="chat-row">
+        <input id="chat-input" type="text" placeholder="Tell me your mood, category, location…" onkeydown="if(event.key==='Enter')sendChat()"/>
+        <button id="send-btn" onclick="sendChat()">Send</button>
+      </div>
     </div>
   </div>
 </div>
 
 <script>
-var SUPA_URL='https://fptquwehptakripyxdzr.supabase.co/rest/v1';
-var SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZwdHF1d2VocHRha3JpcHl4ZHpyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5NjUwMzksImV4cCI6MjA5MDU0MTAzOX0.na64K2uSizfjGmCD-xSNS1doNzTgRQfDw0NncwROaFM';
+var SURL='https://fptquwehptakripyxdzr.supabase.co/rest/v1';
+var SKEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZwdHF1d2VocHRha3JpcHl4ZHpyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5NjUwMzksImV4cCI6MjA5MDU0MTAzOX0.na64K2uSizfjGmCD-xSNS1doNzTgRQfDw0NncwROaFM';
+var PROXY='https://what-to-eat-proxy.flyingpapers.workers.dev';
 
 function xhr(method,path,body){
   return new Promise(function(resolve,reject){
     var x=new XMLHttpRequest();
-    x.open(method,SUPA_URL+path);
-    x.setRequestHeader('apikey',SUPA_KEY);
-    x.setRequestHeader('Authorization','Bearer '+SUPA_KEY);
+    x.open(method,SURL+path);
+    x.setRequestHeader('apikey',SKEY);
+    x.setRequestHeader('Authorization','Bearer '+SKEY);
     x.setRequestHeader('Content-Type','application/json');
     if(method==='POST'||method==='PATCH')x.setRequestHeader('Prefer','return=representation');
-    x.onload=function(){if(x.status>=200&&x.status<300){resolve(x.responseText?JSON.parse(x.responseText):null);}else{reject(new Error('HTTP '+x.status+': '+x.responseText));}};
+    x.onload=function(){
+      if(x.status>=200&&x.status<300)resolve(x.responseText?JSON.parse(x.responseText):null);
+      else reject(new Error('HTTP '+x.status+': '+x.responseText));
+    };
     x.onerror=function(){reject(new Error('Network error'));};
     x.send(body?JSON.stringify(body):null);
   });
@@ -282,47 +283,74 @@ var DAY_NAMES=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 var DAY_KEYS=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
 var WEEKDAYS=['Mon','Tue','Wed','Thu','Fri'];
 var WEEKEND=['Sat','Sun'];
+var PRESET_CATS=['Main Meal','Dessert','Drinks','Snacks','Supper','Breakfast'];
 var dishes=[],chatHistory=[],activeFilter='All',openMenu=null,editingId=null,selectedPrice=0;
 
+// ── Page nav ───────────────────────────────────────────
 function showPage(name){
   document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});
   document.querySelectorAll('.nav-tab').forEach(function(t){t.classList.remove('active');});
   document.getElementById('page-'+name).classList.add('active');
-  var tabs=document.querySelectorAll('.nav-tab');
-  (name==='list'?tabs[0]:tabs[1]).classList.add('active');
+  event.currentTarget.classList.add('active');
 }
 
+// ── Clock ──────────────────────────────────────────────
 function updateClock(){
   var n=new Date();
   document.getElementById('clock').textContent=DAY_NAMES[n.getDay()]+' '+String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');
-  var c=dishes.filter(function(d){return isOpenNow(d);}).length;
-  document.getElementById('open-count').textContent=c+' open now';
 }
 updateClock();setInterval(updateClock,15000);
 
+// ── Status ─────────────────────────────────────────────
 function setStatus(type,msg){
-  var el=document.getElementById('db-status');el.className=type;el.textContent=msg;
+  var el=document.getElementById('db-status');
+  el.className=type;el.textContent=msg;
   if(type==='ok')setTimeout(function(){el.className='hidden';},3000);
 }
 
+// ── Load ───────────────────────────────────────────────
 function loadDishes(){
   setStatus('loading','Connecting to database…');
   dbLoad().then(function(data){
-    dishes=data.map(function(r){return{id:r.id,name:r.name,category:r.category,postal:r.postal||'',hours:r.hours,price:r.price||null};});
+    dishes=data.map(function(r){
+      return{id:r.id,name:r.name,category:r.category,postal:r.postal||'',hours:r.hours,price:r.price||null};
+    });
     setStatus('ok','✓ Connected — '+dishes.length+' dish'+(dishes.length===1?'':'es')+' loaded');
-    rebuildFilterBar();renderDishes();updateClock();
+    rebuildFilterBar();renderDishes();
   }).catch(function(e){
     setStatus('err','Connection failed: '+e.message);
     document.getElementById('dish-list').innerHTML='<div class="empty">Could not load. See error above.</div>';
   });
 }
 
-function onCatChange(){document.getElementById('custom-cat-wrap').style.display=document.getElementById('f-category').value==='custom'?'flex':'none';}
-function getCategory(){var v=document.getElementById('f-category').value;if(v==='custom'){var c=document.getElementById('f-custom-cat').value.trim();return c||'Custom';}return v;}
+// ── Category ───────────────────────────────────────────
+function onCatChange(){
+  document.getElementById('custom-cat-wrap').style.display=
+    document.getElementById('f-category').value==='custom'?'flex':'none';
+}
+function getCategory(){
+  var v=document.getElementById('f-category').value;
+  if(v==='custom'){var c=document.getElementById('f-custom-cat').value.trim();return c||'Custom';}
+  return v;
+}
 
+// ── Price ──────────────────────────────────────────────
+function selectPrice(val){
+  selectedPrice=val;
+  document.querySelectorAll('.price-btn').forEach(function(b){
+    b.className='price-btn';
+    var bv=parseInt(b.dataset.val);
+    if(val>0&&bv===val)b.className='price-btn active-'+val;
+    if(val===0&&bv===0)b.className='price-btn active-clear';
+  });
+}
+
+// ── Filter ─────────────────────────────────────────────
 function setFilter(cat){
   activeFilter=cat;
-  document.querySelectorAll('.filter-tab').forEach(function(t){t.classList.toggle('active',t.dataset.cat===cat);});
+  document.querySelectorAll('.filter-tab').forEach(function(t){
+    t.classList.toggle('active',t.dataset.cat===cat);
+  });
   renderDishes();
 }
 function rebuildFilterBar(){
@@ -334,33 +362,108 @@ function rebuildFilterBar(){
   if(cats.indexOf(activeFilter)<0){activeFilter='All';setFilter('All');}
 }
 
+// ── Hours form ─────────────────────────────────────────
 function buildHoursForm(){
-  var tbody=document.getElementById('hours-body');tbody.innerHTML='';
+  var tbody=document.getElementById('hours-body');
+  tbody.innerHTML='';
   DAY_KEYS.forEach(function(day){
     var isWe=day==='Sat'||day==='Sun';
-    var tr=document.createElement('tr');tr.id='row-'+day;tr.dataset.day=day;
-    var others=DAY_KEYS.filter(function(d){return d!==day;});
-    var mi='<div class="copy-menu-item" onclick="copyToAll(\''+day+'\')">All days</div>'+
-      '<div class="copy-menu-item" onclick="copyToGroup(\''+day+'\',\'weekdays\')">Weekdays (Mon–Fri)</div>'+
-      '<div class="copy-menu-item" onclick="copyToGroup(\''+day+'\',\'weekend\')">Weekend (Sat–Sun)</div>'+
-      '<div style="border-top:1px solid #f0efe8;margin:4px 0;"></div>'+
-      others.map(function(d){return '<div class="copy-menu-item" onclick="copyToDay(\''+day+'\',\''+d+'\')">'+d+' only</div>';}).join('');
-    tr.innerHTML='<td style="font-size:13px;color:#666;font-weight:500;padding:4px 4px 4px 0;width:34px;">'+day+'</td>'+
-      '<td style="width:44px;padding:4px 5px;"><input type="checkbox" class="day-toggle" checked/></td>'+
-      '<td style="padding:4px 0;"><div style="display:flex;align-items:center;flex-wrap:wrap;gap:4px;">'+
-        '<div class="time-pair"><input type="time" class="t-open" value="09:00"/><span class="time-sep">–</span><input type="time" class="t-close" value="'+(isWe?'18:00':'21:00')+'"/></div>'+
-        '<div class="copy-wrap"><button class="copy-btn" onclick="toggleCopyMenu(event,\''+day+'\')">Copy to ▾</button>'+
-        '<div class="copy-menu" id="menu-'+day+'" style="display:none;top:100%;left:0;margin-top:2px;">'+mi+'</div></div>'+
-      '</div></td>';
+    var tr=document.createElement('tr');
+    tr.id='row-'+day;
+    tr.dataset.day=day;
+
+    // Build copy menu HTML safely
+    var menuDiv=document.createElement('div');
+    menuDiv.className='copy-menu';
+    menuDiv.id='menu-'+day;
+    menuDiv.style.cssText='display:none;top:100%;left:0;margin-top:2px;';
+    var menuItems=[
+      {label:'All days',fn:'copyToAll("'+day+'")'},
+      {label:'Weekdays (Mon–Fri)',fn:'copyToGroup("'+day+'","weekdays")'},
+      {label:'Weekend (Sat–Sun)',fn:'copyToGroup("'+day+'","weekend")'}
+    ];
+    DAY_KEYS.filter(function(d){return d!==day;}).forEach(function(d){
+      menuItems.push({label:d+' only',fn:'copyToDay("'+day+'","'+d+'")'});
+    });
+    var sep=document.createElement('div');
+    sep.style.cssText='border-top:1px solid #f0efe8;margin:4px 0;';
+    menuItems.forEach(function(item,idx){
+      if(idx===3)menuDiv.appendChild(sep);
+      var mi=document.createElement('div');
+      mi.className='copy-menu-item';
+      mi.textContent=item.label;
+      mi.setAttribute('onclick',item.fn);
+      menuDiv.appendChild(mi);
+    });
+
+    // Build row HTML
+    tr.innerHTML=
+      '<td>'+day+'</td>'+
+      '<td><input type="checkbox" class="day-toggle" checked/></td>'+
+      '<td>'+
+        '<div style="display:flex;align-items:center;flex-wrap:wrap;gap:4px;">'+
+          '<div class="time-pair">'+
+            '<input type="time" class="t-open" value="09:00"/>'+
+            '<span class="time-sep">–</span>'+
+            '<input type="time" class="t-close" value="'+(isWe?'18:00':'21:00')+'"/>'+
+          '</div>'+
+          '<div class="copy-wrap">'+
+            '<button class="copy-btn">Copy to ▾</button>'+
+          '</div>'+
+        '</div>'+
+        '<div class="break-row">'+
+          '<input type="checkbox" class="break-toggle"/>'+
+          '<span class="break-label">Break</span>'+
+          '<div class="break-times" style="opacity:0.35;pointer-events:none;">'+
+            '<input type="time" class="t-break-start" value="14:00"/>'+
+            '<span class="time-sep">–</span>'+
+            '<input type="time" class="t-break-end" value="17:00"/>'+
+          '</div>'+
+        '</div>'+
+      '</td>';
+
     tbody.appendChild(tr);
-    var cb=tr.querySelector('.day-toggle'),tp=tr.querySelector('.time-pair'),cw=tr.querySelector('.copy-wrap');
-    cb.addEventListener('change',function(){var off=!cb.checked;tp.style.opacity=off?'0.35':'1';tp.style.pointerEvents=off?'none':'';cw.style.opacity=off?'0.35':'1';cw.style.pointerEvents=off?'none':'';});
+
+    // Append copy menu into copy-wrap
+    tr.querySelector('.copy-wrap').appendChild(menuDiv);
+
+    // Wire up copy button
+    tr.querySelector('.copy-btn').addEventListener('click',function(e){
+      e.stopPropagation();
+      if(openMenu&&openMenu!==menuDiv)openMenu.style.display='none';
+      var showing=menuDiv.style.display==='block';
+      menuDiv.style.display=showing?'none':'block';
+      openMenu=showing?null:menuDiv;
+    });
+
+    // Wire up day toggle
+    var cb=tr.querySelector('.day-toggle');
+    var tp=tr.querySelector('.time-pair');
+    var cw=tr.querySelector('.copy-wrap');
+    var breakRow=tr.querySelector('.break-row');
+    cb.addEventListener('change',function(){
+      var off=!cb.checked;
+      tp.style.opacity=off?'0.35':'1';tp.style.pointerEvents=off?'none':'';
+      cw.style.opacity=off?'0.35':'1';cw.style.pointerEvents=off?'none':'';
+      breakRow.style.opacity=off?'0.35':'1';breakRow.style.pointerEvents=off?'none':'';
+    });
+
+    // Wire up break toggle
+    var bc=tr.querySelector('.break-toggle');
+    var bt=tr.querySelector('.break-times');
+    bc.addEventListener('change',function(){
+      bt.style.opacity=bc.checked?'1':'0.35';
+      bt.style.pointerEvents=bc.checked?'':'none';
+    });
   });
 }
 buildHoursForm();
 
-document.addEventListener('click',function(e){if(openMenu&&!openMenu.contains(e.target)){openMenu.style.display='none';openMenu=null;}});
-function toggleCopyMenu(e,day){e.stopPropagation();var menu=document.getElementById('menu-'+day);if(openMenu&&openMenu!==menu)openMenu.style.display='none';var s=menu.style.display==='block';menu.style.display=s?'none':'block';openMenu=s?null:menu;}
+document.addEventListener('click',function(e){
+  if(openMenu&&!openMenu.contains(e.target)){openMenu.style.display='none';openMenu=null;}
+});
+
+// ── Hours helpers ──────────────────────────────────────
 function getRowValues(day){
   var tr=document.getElementById('row-'+day);
   var bc=tr.querySelector('.break-toggle');
@@ -373,43 +476,73 @@ function getRowValues(day){
     breakEnd:tr.querySelector('.t-break-end').value
   };
 }
+
 function setRowValues(day,open,close,checked,breakOn,breakStart,breakEnd){
   var tr=document.getElementById('row-'+day);if(!tr)return;
-  tr.querySelector('.t-open').value=open;tr.querySelector('.t-close').value=close;
+  tr.querySelector('.t-open').value=open;
+  tr.querySelector('.t-close').value=close;
   var cb=tr.querySelector('.day-toggle');cb.checked=checked;
-  var tp=tr.querySelector('.time-pair'),cw=tr.querySelector('.copy-wrap');
+  var tp=tr.querySelector('.time-pair');
+  var cw=tr.querySelector('.copy-wrap');
+  var br=tr.querySelector('.break-row');
   tp.style.opacity=checked?'1':'0.35';tp.style.pointerEvents=checked?'':'none';
   cw.style.opacity=checked?'1':'0.35';cw.style.pointerEvents=checked?'none':'';
+  br.style.opacity=checked?'1':'0.35';br.style.pointerEvents=checked?'none':'';
   var bc=tr.querySelector('.break-toggle');
   var bt=tr.querySelector('.break-times');
-  var br=tr.querySelector('.break-row');
-  if(breakOn!==undefined){
-    bc.checked=!!breakOn;
-    if(breakStart)tr.querySelector('.t-break-start').value=breakStart;
-    if(breakEnd)tr.querySelector('.t-break-end').value=breakEnd;
-    bt.style.opacity=bc.checked?'1':'0.35';
-    bt.style.pointerEvents=bc.checked?'':'none';
-  }
-  br.style.opacity=checked?'1':'0.35';
-  br.style.pointerEvents=checked?'none':'';
+  bc.checked=!!breakOn;
+  if(breakStart)tr.querySelector('.t-break-start').value=breakStart;
+  if(breakEnd)tr.querySelector('.t-break-end').value=breakEnd;
+  bt.style.opacity=bc.checked?'1':'0.35';
+  bt.style.pointerEvents=bc.checked?'':'none';
 }
-function closeAllMenus(){DAY_KEYS.forEach(function(d){var m=document.getElementById('menu-'+d);if(m)m.style.display='none';});openMenu=null;}
-function copyToAll(from){var v=getRowValues(from);DAY_KEYS.forEach(function(d){if(d!==from)setRowValues(d,v.open,v.close,v.checked);});closeAllMenus();}
-function copyToGroup(from,grp){var v=getRowValues(from);(grp==='weekdays'?WEEKDAYS:WEEKEND).forEach(function(d){if(d!==from)setRowValues(d,v.open,v.close,v.checked);});closeAllMenus();}
-function copyToDay(from,to){var v=getRowValues(from);setRowValues(to,v.open,v.close,v.checked);closeAllMenus();}
+
+function closeAllMenus(){
+  DAY_KEYS.forEach(function(d){var m=document.getElementById('menu-'+d);if(m)m.style.display='none';});
+  openMenu=null;
+}
+function copyToAll(from){
+  var v=getRowValues(from);
+  DAY_KEYS.forEach(function(d){if(d!==from)setRowValues(d,v.open,v.close,v.checked,v.breakOn,v.breakStart,v.breakEnd);});
+  closeAllMenus();
+}
+function copyToGroup(from,grp){
+  var v=getRowValues(from);
+  (grp==='weekdays'?WEEKDAYS:WEEKEND).forEach(function(d){
+    if(d!==from)setRowValues(d,v.open,v.close,v.checked,v.breakOn,v.breakStart,v.breakEnd);
+  });
+  closeAllMenus();
+}
+function copyToDay(from,to){
+  var v=getRowValues(from);
+  setRowValues(to,v.open,v.close,v.checked,v.breakOn,v.breakStart,v.breakEnd);
+  closeAllMenus();
+}
+
 function applyPreset(type){
-  if(type==='same'){var v=getRowValues('Mon');DAY_KEYS.forEach(function(d){setRowValues(d,v.open,v.close,true);});}
-  else if(type==='weekday-weekend'){WEEKDAYS.forEach(function(d){setRowValues(d,'09:00','21:00',true);});WEEKEND.forEach(function(d){setRowValues(d,'09:00','18:00',true);});}
-  else if(type==='mon-sat'){WEEKDAYS.forEach(function(d){setRowValues(d,'09:00','21:00',true);});setRowValues('Sat','09:00','21:00',true);setRowValues('Sun','09:00','21:00',false);}
-  else if(type==='mon-fri'){WEEKDAYS.forEach(function(d){setRowValues(d,'09:00','21:00',true);});WEEKEND.forEach(function(d){setRowValues(d,'09:00','18:00',false);});}
+  if(type==='same'){
+    var v=getRowValues('Mon');
+    DAY_KEYS.forEach(function(d){setRowValues(d,v.open,v.close,true,v.breakOn,v.breakStart,v.breakEnd);});
+  }else if(type==='weekday-weekend'){
+    WEEKDAYS.forEach(function(d){setRowValues(d,'09:00','21:00',true,false,'14:00','17:00');});
+    WEEKEND.forEach(function(d){setRowValues(d,'09:00','18:00',true,false,'14:00','17:00');});
+  }else if(type==='mon-sat'){
+    WEEKDAYS.forEach(function(d){setRowValues(d,'09:00','21:00',true,false,'14:00','17:00');});
+    setRowValues('Sat','09:00','21:00',true,false,'14:00','17:00');
+    setRowValues('Sun','09:00','21:00',false,false,'14:00','17:00');
+  }else if(type==='mon-fri'){
+    WEEKDAYS.forEach(function(d){setRowValues(d,'09:00','21:00',true,false,'14:00','17:00');});
+    WEEKEND.forEach(function(d){setRowValues(d,'09:00','18:00',false,false,'14:00','17:00');});
+  }
 }
+
 function readHours(){
   var result={};
   document.querySelectorAll('#hours-body tr').forEach(function(tr){
     var cb=tr.querySelector('.day-toggle');
     if(!cb.checked){result[tr.dataset.day]=null;return;}
-    var bc=tr.querySelector('.break-toggle');
     var h={open:tr.querySelector('.t-open').value,close:tr.querySelector('.t-close').value};
+    var bc=tr.querySelector('.break-toggle');
     if(bc.checked){
       h.breakStart=tr.querySelector('.t-break-start').value;
       h.breakEnd=tr.querySelector('.t-break-end').value;
@@ -419,28 +552,39 @@ function readHours(){
   return result;
 }
 
+// ── Open/closed ────────────────────────────────────────
 function isOpenNow(dish){
-  var now=new Date(),day=DAY_NAMES[now.getDay()],h=dish.hours[day];
+  var now=new Date();
+  var day=DAY_NAMES[now.getDay()];
+  var h=dish.hours[day];
   if(!h)return false;
   var cur=now.getHours()*60+now.getMinutes();
-  var op=h.open.split(':').map(Number),cl=h.close.split(':').map(Number);
+  var op=h.open.split(':').map(Number);
+  var cl=h.close.split(':').map(Number);
   var oMin=op[0]*60+op[1],cMin=cl[0]*60+cl[1];
-  var withinHours=(cMin<=oMin)?(cur>=oMin||cur<cMin):(cur>=oMin&&cur<cMin);
-  if(!withinHours)return false;
-  // check break time
+  var open=(cMin<=oMin)?(cur>=oMin||cur<cMin):(cur>=oMin&&cur<cMin);
+  if(!open)return false;
   if(h.breakStart&&h.breakEnd){
-    var bs=h.breakStart.split(':').map(Number),be=h.breakEnd.split(':').map(Number);
-    var bsMin=bs[0]*60+bs[1],beMin=be[0]*60+be[1];
-    if(cur>=bsMin&&cur<beMin)return false;
+    var bs=h.breakStart.split(':').map(Number);
+    var be=h.breakEnd.split(':').map(Number);
+    if(cur>=bs[0]*60+bs[1]&&cur<be[0]*60+be[1])return false;
   }
   return true;
 }
-function catPill(cat){var cls=cat.replace(/\s+/g,'-').replace(/[^a-zA-Z0-9-]/g,'');return '<span class="cat-pill cat-'+cls+'">'+cat+'</span>';}
+
+// ── Render dishes ──────────────────────────────────────
+function catPill(cat){
+  var cls=cat.replace(/\s+/g,'-').replace(/[^a-zA-Z0-9-]/g,'');
+  return '<span class="cat-pill cat-'+cls+'">'+cat+'</span>';
+}
 
 function renderDishes(){
   var el=document.getElementById('dish-list');
   var filtered=activeFilter==='All'?dishes:dishes.filter(function(d){return d.category===activeFilter;});
-  if(!filtered.length){el.innerHTML='<div class="empty">'+(dishes.length?'No dishes in this category.':'No dishes yet — add one below')+'</div>';return;}
+  if(!filtered.length){
+    el.innerHTML='<div class="empty">'+(dishes.length?'No dishes in this category.':'No dishes yet — add one above')+'</div>';
+    return;
+  }
   var today=DAY_NAMES[new Date().getDay()];
   el.innerHTML=filtered.map(function(d){
     var open=isOpenNow(d);
@@ -448,81 +592,116 @@ function renderDishes(){
     var dayRows=DAY_KEYS.map(function(day){
       var h=d.hours[day];
       if(!h)return '<div class="day-row-info"><span class="day-label">'+day+'</span><span class="tag off">Closed</span></div>';
-      var bold=day===today?'font-weight:500;color:#1a1a1a;':'';
-      var breakStr=h.breakStart?'<span style="color:#ccc;margin:0 2px;">·</span><span style="color:#bbb;font-size:11px;">break '+h.breakStart+'–'+h.breakEnd+'</span>':'';
-      return '<div class="day-row-info"><span class="day-label">'+day+'</span><span class="hours-text" style="'+bold+'">'+h.open+' – '+h.close+'</span>'+breakStr+'</div>';
+      var bold=day===today?'font-weight:500;':'';
+      var breakStr=h.breakStart?'<span class="break-text">· break '+h.breakStart+'–'+h.breakEnd+'</span>':'';
+      return '<div class="day-row-info"><span class="day-label">'+day+'</span>'+
+        '<span class="hours-text" style="'+bold+'">'+h.open+' – '+h.close+'</span>'+breakStr+'</div>';
     }).join('');
-    var loc=d.postal?'<div class="loc-line">&#128205; S('+d.postal+')</div>':'';
-    var price=d.price?'<span class="price-tag">'+('$'.repeat(d.price))+'</span>':'';
-    return '<div class="dish-card'+(editingId===d.id?' dish-card--editing':'')+'" style="'+(editingId===d.id?'border-color:#888;':'')+'">'+
-      '<div class="dish-card-top"><span class="dish-name">'+d.name+'</span>'+
-      '<div class="card-tags">'+catPill(d.category)+stag+'</div>'+
-      '<div class="card-actions"><button class="edit-btn" onclick="startEdit(\''+d.id+'\')">Edit</button><button class="rm" onclick="rmDish(\''+d.id+'\')">×</button></div></div>'+
-      '<div class="dish-hours">'+dayRows+'</div>'+loc+'</div>';
+    var locParts=[];
+    if(d.postal)locParts.push('&#128205; S('+d.postal+')');
+    if(d.price)locParts.push('<span class="price-tag">'+'$'.repeat(d.price)+'</span>');
+    var locLine=locParts.length?'<div class="loc-line">'+locParts.join('')+'</div>':'';
+    return '<div class="dish-card" style="'+(editingId===d.id?'border-color:#888;':'')+'">'+
+      '<div class="dish-card-top">'+
+        '<span class="dish-name">'+d.name+'</span>'+
+        '<div class="card-tags">'+catPill(d.category)+stag+'</div>'+
+        '<div class="card-actions">'+
+          '<button class="edit-btn" onclick="startEdit(\''+d.id+'\')">Edit</button>'+
+          '<button class="rm" onclick="rmDish(\''+d.id+'\')">×</button>'+
+        '</div>'+
+      '</div>'+
+      '<div class="dish-hours">'+dayRows+'</div>'+
+      locLine+
+    '</div>';
   }).join('');
 }
-setInterval(function(){renderDishes();updateClock();},60000);
 
+// ── Edit ───────────────────────────────────────────────
 function startEdit(id){
   var dish=dishes.find(function(d){return d.id===id;});if(!dish)return;
   editingId=id;
-  document.getElementById('form-title').textContent='Edit dish';
+  showPage('list');
+  document.getElementById('form-title').style.display='block';
+  document.getElementById('form-title').textContent='Editing: '+dish.name;
   document.getElementById('f-name').value=dish.name;
-  document.getElementById('f-postal').value=dish.postal||'';selectPrice(dish.price||0);
-  var presets=['Main Meal','Dessert','Drinks','Snacks','Supper','Breakfast'];
-  if(presets.indexOf(dish.category)>=0){document.getElementById('f-category').value=dish.category;document.getElementById('custom-cat-wrap').style.display='none';}
-  else{document.getElementById('f-category').value='custom';document.getElementById('custom-cat-wrap').style.display='flex';document.getElementById('f-custom-cat').value=dish.category;}
+  document.getElementById('f-postal').value=dish.postal||'';
+  selectPrice(dish.price||0);
+  if(PRESET_CATS.indexOf(dish.category)>=0){
+    document.getElementById('f-category').value=dish.category;
+    document.getElementById('custom-cat-wrap').style.display='none';
+  }else{
+    document.getElementById('f-category').value='custom';
+    document.getElementById('custom-cat-wrap').style.display='flex';
+    document.getElementById('f-custom-cat').value=dish.category;
+  }
   buildHoursForm();
-  DAY_KEYS.forEach(function(day){var h=dish.hours[day];if(h)setRowValues(day,h.open,h.close,true,!!(h.breakStart),h.breakStart||'14:00',h.breakEnd||'17:00');else setRowValues(day,'09:00','21:00',false,false,'14:00','17:00');});
+  DAY_KEYS.forEach(function(day){
+    var h=dish.hours[day];
+    if(h)setRowValues(day,h.open,h.close,true,!!(h.breakStart),h.breakStart||'14:00',h.breakEnd||'17:00');
+    else setRowValues(day,'09:00','21:00',false,false,'14:00','17:00');
+  });
   document.getElementById('save-btn').textContent='Save changes';
   document.getElementById('cancel-btn').style.display='block';
   document.getElementById('form-panel').scrollIntoView({behavior:'smooth',block:'start'});
-  renderDishes();
 }
+
 function cancelEdit(){
   editingId=null;
-  document.getElementById('form-title').textContent='Add a dish';
-  document.getElementById('f-name').value='';document.getElementById('f-postal').value='';
-  document.getElementById('f-category').value='Main Meal';selectPrice(0);
-  document.getElementById('custom-cat-wrap').style.display='none';document.getElementById('f-custom-cat').value='';
-  document.getElementById('save-btn').textContent='Add dish';document.getElementById('cancel-btn').style.display='none';
-  buildHoursForm();renderDishes();
+  document.getElementById('form-title').style.display='none';
+  document.getElementById('f-name').value='';
+  document.getElementById('f-postal').value='';
+  document.getElementById('f-category').value='Main Meal';
+  document.getElementById('custom-cat-wrap').style.display='none';
+  document.getElementById('f-custom-cat').value='';
+  document.getElementById('save-btn').textContent='Add dish';
+  document.getElementById('cancel-btn').style.display='none';
+  selectPrice(0);
+  buildHoursForm();
+  renderDishes();
 }
+
+// ── Submit ─────────────────────────────────────────────
 function submitForm(){
-  var name=document.getElementById('f-name').value.trim();if(!name){document.getElementById('f-name').focus();return;}
+  var name=document.getElementById('f-name').value.trim();
+  if(!name){document.getElementById('f-name').focus();return;}
   var postal=document.getElementById('f-postal').value.trim();
-  var category=getCategory();var hours=readHours();
+  var category=getCategory();
+  var hours=readHours();
   if(!Object.values(hours).some(function(h){return h!==null;})){alert('Please enable at least one day.');return;}
-  var btn=document.getElementById('save-btn');btn.disabled=true;btn.textContent=editingId?'Saving…':'Adding…';
-  var price=selectedPrice;var payload={name:name,category:category,postal:postal,hours:hours,price:price||null};
+  var btn=document.getElementById('save-btn');
+  btn.disabled=true;btn.textContent=editingId?'Saving…':'Adding…';
+  var payload={name:name,category:category,postal:postal,hours:hours,price:selectedPrice||null};
   if(editingId){
     var id=editingId;
     dbUpdate(id,payload).then(function(data){
       var u=Array.isArray(data)?data[0]:data;
       var idx=dishes.findIndex(function(d){return d.id===id;});
-      if(idx>=0)dishes[idx]={id:u.id,name:u.name,category:u.category,postal:u.postal||'',hours:u.hours};
-      cancelEdit();rebuildFilterBar();renderDishes();updateClock();setStatus('ok','✓ Updated');
-    }).catch(function(e){setStatus('err','Failed to update: '+e.message);})
-    .finally(function(){btn.disabled=false;btn.textContent='Save changes';});
-  } else {
+      if(idx>=0)dishes[idx]={id:u.id,name:u.name,category:u.category,postal:u.postal||'',hours:u.hours,price:u.price||null};
+      cancelEdit();rebuildFilterBar();renderDishes();setStatus('ok','✓ Updated');
+    }).catch(function(e){setStatus('err','Failed to update: '+e.message);
+    }).finally(function(){btn.disabled=false;btn.textContent='Save changes';});
+  }else{
     dbInsert(payload).then(function(data){
       var s=Array.isArray(data)?data[0]:data;
-      dishes.push({id:s.id,name:s.name,category:s.category,postal:s.postal||'',hours:s.hours});
-      cancelEdit();rebuildFilterBar();renderDishes();updateClock();setStatus('ok','✓ Saved');
-    }).catch(function(e){setStatus('err','Failed to save: '+e.message);})
-    .finally(function(){btn.disabled=false;btn.textContent='Add dish';});
+      dishes.push({id:s.id,name:s.name,category:s.category,postal:s.postal||'',hours:s.hours,price:s.price||null});
+      cancelEdit();rebuildFilterBar();renderDishes();setStatus('ok','✓ Saved');
+    }).catch(function(e){setStatus('err','Failed to save: '+e.message);
+    }).finally(function(){btn.disabled=false;btn.textContent='Add dish';});
   }
 }
 document.getElementById('f-name').addEventListener('keydown',function(e){if(e.key==='Enter')submitForm();});
+
 function rmDish(id){
   if(!confirm('Remove this dish?'))return;
   dbDelete(id).then(function(){
     dishes=dishes.filter(function(d){return d.id!==id;});
     if(editingId===id)cancelEdit();
-    rebuildFilterBar();renderDishes();updateClock();setStatus('ok','✓ Deleted');
+    rebuildFilterBar();renderDishes();setStatus('ok','✓ Deleted');
   }).catch(function(e){setStatus('err','Failed to delete: '+e.message);});
 }
+setInterval(renderDishes,60000);
 
+// ── Chat ───────────────────────────────────────────────
 function addMsg(role,text){
   var cw=document.getElementById('chat-window');
   var d=document.createElement('div');d.className='msg '+(role==='user'?'user':'bot');
@@ -539,51 +718,49 @@ function addTyping(){
   d.appendChild(av);d.appendChild(b);cw.appendChild(d);cw.scrollTop=cw.scrollHeight;
 }
 function removeTyping(){var t=document.getElementById('typing');if(t)t.remove();}
+
 function buildContext(){
-  var now=new Date(),today=DAY_NAMES[now.getDay()];
+  var now=new Date();var today=DAY_NAMES[now.getDay()];
   var timeStr=today+' '+String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
   if(!dishes.length)return 'Current time: '+timeStr+' (Singapore). No dishes added yet.';
   var lines=dishes.map(function(d){
-    var open=isOpenNow(d),loc=d.postal?'postal S('+d.postal+')':'no postal code';
-    var todayH=d.hours[today],todayStr=todayH?'today '+todayH.open+'–'+todayH.close:'closed today';
-    var sched=DAY_KEYS.map(function(day){var h=d.hours[day];if(!h)return day+' closed';var b=h.breakStart?' (break '+h.breakStart+'–'+h.breakEnd+')':'';return day+' '+h.open+'–'+h.close+b;}).join(', ');
-    var priceStr=d.price?('$'.repeat(d.price)):'no price set';return '- ['+d.category+'] '+d.name+' | '+loc+' | price: '+priceStr+' | '+todayStr+' → '+(open?'OPEN':'CLOSED')+' now | schedule: '+sched;
+    var open=isOpenNow(d);
+    var loc=d.postal?'postal S('+d.postal+')':'no postal code';
+    var priceStr=d.price?'$'.repeat(d.price):'no price set';
+    var todayH=d.hours[today];
+    var todayStr=todayH?'today '+todayH.open+'–'+todayH.close+(todayH.breakStart?' break '+todayH.breakStart+'–'+todayH.breakEnd:''):'closed today';
+    var sched=DAY_KEYS.map(function(day){
+      var h=d.hours[day];
+      if(!h)return day+' closed';
+      return day+' '+h.open+'–'+h.close+(h.breakStart?' break '+h.breakStart+'–'+h.breakEnd:'');
+    }).join(', ');
+    return '- ['+d.category+'] '+d.name+' | '+loc+' | '+priceStr+' | '+todayStr+' → '+(open?'OPEN':'CLOSED')+' now | schedule: '+sched;
   }).join('\n');
   return 'Current time: '+timeStr+' (Singapore).\n\nUser\'s food list:\n'+lines;
 }
+
 function sendChat(){
   var inp=document.getElementById('chat-input');
   var text=inp.value.trim();if(!text)return;
   inp.value='';document.getElementById('send-btn').disabled=true;
   addMsg('user',text);chatHistory.push({role:'user',content:text});addTyping();
-  var system='You are a warm, decisive food decision helper for someone in Singapore.\n\n'+buildContext()+'\n\nYour job:\n- Help the user pick something to eat from their list.\n- Each dish has a category in [brackets]. Filter to that category if the user asks.\n- Factor in what is currently OPEN based on the exact time above.\n- If the user shares their location (area, MRT, or postal code), prefer nearby options. Singapore postal districts: 01–08=Central/CBD, 09–10=Orchard, 11–12=Novena, 14–16=Queenstown, 18–19=Jurong East, 20–22=Jurong West, 23=Bukit Batok, 25–28=Woodlands, 29–30=Sembawang, 31–33=Yishun, 34–36=Ang Mo Kio/Hougang, 37–38=Bishan, 39–41=Toa Payoh, 42–44=Geylang, 45–46=Katong, 47–48=Bedok, 49–52=Tampines/Pasir Ris, 53–58=Changi.\n- If everything relevant is closed, say so and mention what opens next.\n- Ask for location once if it would help.\n- Be SHORT: 2–4 sentences. Be confident and decisive.\n- Only suggest dishes from the user\'s list.\n- If list is empty, encourage them to add dishes on the My List tab.';
-  fetch('https://what-to-eat-proxy.flyingpapers.workers.dev',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:600,system:system,messages:chatHistory})})
+  var system='You are a warm, decisive food decision helper for someone in Singapore.\n\n'+buildContext()+'\n\nYour job:\n- Help the user pick something to eat from their list.\n- Each dish has a [category]. Filter to it if the user asks.\n- Factor in OPEN/CLOSED status — places are closed during break times too.\n- If the user mentions price (cheap, affordable, splurge), use the $ rating to filter.\n- If the user shares their location (area, MRT, postal code), prefer nearby options. Singapore postal districts: 01–08=Central/CBD, 09–10=Orchard, 11–12=Novena, 14–16=Queenstown, 18–19=Jurong East, 20–22=Jurong West, 23=Bukit Batok, 25–28=Woodlands, 29–30=Sembawang, 31–33=Yishun, 34–36=Ang Mo Kio/Hougang, 37–38=Bishan, 39–41=Toa Payoh, 42–44=Geylang, 45–46=Katong, 47–48=Bedok, 49–52=Tampines/Pasir Ris, 53–58=Changi.\n- If everything relevant is closed (including break time), say so and mention what opens next.\n- Ask for location once if it would help narrow things down.\n- Be SHORT: 2–4 sentences. Be confident and decisive.\n- Only suggest dishes from the user\'s list.\n- If the list is empty, ask them to add dishes in the My food list tab first.';
+  fetch(PROXY,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:600,system:system,messages:chatHistory})})
   .then(function(r){return r.json();})
   .then(function(data){
-    console.log('Worker response:', JSON.stringify(data));
     var txt=null;
     if(data.content&&Array.isArray(data.content)){
       var block=data.content.find(function(b){return b.type==='text';});
       if(block)txt=block.text;
     }
-    if(!txt&&data.error){txt='API error: '+(data.error.message||JSON.stringify(data.error));}
-    if(!txt){txt='Unexpected response — check browser console (F12) for details.';}
-    removeTyping();
-    addMsg('bot',txt);chatHistory.push({role:'assistant',content:txt});
+    if(!txt&&data.error)txt='API error: '+(data.error.message||JSON.stringify(data.error));
+    if(!txt)txt='Unexpected response. Try again!';
+    removeTyping();addMsg('bot',txt);chatHistory.push({role:'assistant',content:txt});
   }).catch(function(e){
-    console.error('Fetch error:',e);
     removeTyping();addMsg('bot','Network error: '+e.message);
   }).finally(function(){document.getElementById('send-btn').disabled=false;inp.focus();});
 }
 function qsend(el){document.getElementById('chat-input').value=el.textContent;sendChat();}
-
-function selectPrice(val){
-  selectedPrice=val;
-  document.querySelectorAll('.price-btn').forEach(function(b){
-    b.className='price-btn';
-    if(val>0&&parseInt(b.dataset.val)===val) b.className='price-btn active-'+val;
-  });
-}
 
 loadDishes();
 </script>
